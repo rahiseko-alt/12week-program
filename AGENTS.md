@@ -165,10 +165,19 @@ node scripts/verify-roadmap-evidence.mjs  # roadmap の evidence が外部事実
    - **手順0-a：リポジトリを Public にする（前提）** — GitHub 無料プランの **Private では branch protection /
      Ruleset は強制されない**（設定画面に「Team org にしないと効かない」旨の警告が出る＝実地で確認済み）。
      公開したくないなら歯止めは掛からないので、代わりに `auto-merge` を無効化し、マージは必ず人手で行う。
-   - **手順0-b：Settings → 左メニュー『Branches』**（**『Rules → Rulesets』ではない**。そちらは無料 Private で
-     効かず迷子になる）→「Add branch protection rule」→ **Branch name pattern に `main`**（空だと Create が
-     押せない）→「Require status checks to pass before merging」にチェック → 検索欄で **`ci-green`** を選ぶ →
-     一番下の緑「**Create**」。
+   - **手順0-b：`main` に「`ci-green` が緑でないとマージ不可」を掛ける。経路は2つあり、Public ならどちらでも効く**
+     （どちらか一方でよい。**GitHub の現行 UI は既定で (A) Rulesets に誘導する**ので、そのまま (A) を使うのが迷いが少ない）。
+     - **(A) Rulesets（現行 UI の既定・推奨）**：Settings → **Rules → Rulesets** → 「New ruleset」→「New branch ruleset」。
+       **ハマりどころ3点（ここを外すと"作ったのに効かない"状態になる＝実地で確認済み）**：
+       1. **Enforcement status を『Active』にする**（既定は **Disabled** のまま。Disabled だと一切適用されない）。
+       2. **Target branches → 「Add target」→「Include default branch」を選ぶ**（未設定だと画面上部に
+          「does not target any resources / **Applies to 0 targets**」と出て適用されない。1 target = `main` になればOK）。
+       3. **「Require status checks to pass」にチェック → 検索欄で `ci-green` を追加** → 緑の「**Create**」で保存。
+     - **(B) 従来の Branch protection（代替）**：Settings → 左メニュー **『Branches』** →「Add branch protection rule」→
+       **Branch name pattern に `main`**（空だと Create が押せない）→「Require status checks to pass before merging」に
+       チェック → 検索欄で **`ci-green`** → 一番下の緑「**Create**」。
+     - ⚠ **無料 Private では (A)(B) いずれも強制されない**（Rulesets は Team org 必須の警告が出る＝実地で確認済み）。
+       だから前提として手順0-a で **Public** にする。Public にしない場合は歯止めが掛からないので `auto-merge` を無効化し人手マージにする。
    - **手順0-c：`roadmap-required` は最初は一覧に出ない**（PR 時のみ動くチェックのため、PR が1本も無い新規
      repo では未記録＝実地で確認済み）。**最初の PR が1回動いた後**、同じ画面で `roadmap-required` を追加する。
      `ci-green` だけでも型/Lint/テスト/ビルド/ツリー検査(evidence)/起動確認を束ねた本丸は効く。
