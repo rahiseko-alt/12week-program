@@ -155,3 +155,19 @@
 - 教訓：**「サーバー側の権限が要る操作」を自動トークンで賄えると仮定しない**。権限モデル(誰のトークンに何が
   できるか)を先に確認する。**外部に出す前に必ず実環境で1回実行して赤/緑を見る**（机上の parse 成功を根拠に
   「動く」と言わない）。非エンジニア向けは「その人が実際にクリックだけで完了できるか」を実物で確かめる。
+
+## 2026-07-24 手順0-b/nav が「Branches」を指したが GitHub 現行UIは Rulesets 既定＝実操作で迷子になった
+- 事象：新リポ(public)の機械強制を有効化する実作業で、AGENTS.md 手順0-b と roadmap の nav は「Settings→**Branches**
+  で branch protection、**Rulesets ではない**」と書いていた。だが GitHub の現行 UI はデフォルトで **Rulesets**
+  (`settings/rules/...`) に誘導し、マスターはそこへ着いた。Rulesets 側は (1)Enforcement status が既定 **Disabled**
+  (2)Target branches が未設定だと **"Applies to 0 targets"** で一切適用されない、という有効化2点が doc に無く、
+  「ci-green は選べたのに効かない(作ったのに適用0件)」状態で手が止まった。ナビの都度説明で復旧したが、次コピーで再発する構造だった。
+- 根因：①「Rulesets ではない」という記述が**無料 Private 前提の古い知見**のまま絶対化されていた。**public では Rulesets は
+  正常に効く**うえ現行UIの既定なのに、doc が経路そのものを否定していた。②Rulesets 特有の有効化手順(Active 化／Include default
+  branch)を doc 化しておらず、UI の既定経路に沿うと必ず詰まる状態だった。
+- 対処：AGENTS.md 手順0-b を「public ならどちらでも効く。**(A) Rulesets(現行UI既定・推奨)＝Active化+Include default branch+
+  ci-green の3点**／(B) 従来 Branches は代替」へ改訂。roadmap の `meta.handoff.nav` 項目2も同じ3点＋"Applies to 0 targets"の
+  警告を明記。無料 Private で効かない旨は前提(0-a)側へ寄せた。
+- 教訓：**UI 手順 doc は「そのツールの現行の既定経路」に追従させる**（否定形で古い前提を絶対化しない）。設定は「作れたか」でなく
+  「**Active かつ対象が1件以上で実際に適用されているか**」まで書く／確かめる。実操作で詰まった箇所は、その場の口頭ナビで終わらせず
+  **必ず doc(手順0・nav)に反映**して次コピーでの再発を断つ。

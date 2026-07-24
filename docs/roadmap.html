@@ -125,7 +125,7 @@
       "trouble": "無し",
       "nav": [
         "1. チェックイン：この handoff と meta.active/meta.next を読み、ユーザーへ『白紙テンプレなので、まず案件のゴールをヒアリングして原子ツリーを描きます』と丁寧語で伝える。",
-        "2. 機械強制(新リポジトリで1回だけ)：(管理者が)リポジトリを Public にし、Settings→Branches→main に branch protection→必須チェックに ci-green を追加。最初のPRの後に roadmap-required も追加。詳細は AGENTS.md『案件の絶対起点』手順0。",
+        "2. 機械強制(新リポジトリで1回だけ／管理者の手作業。CIやAIからは不可)：まず(管理者が)リポジトリを Public にする(無料Private では branch protection/Ruleset が効かない)。次に main に『ci-green が緑でないとマージ不可』を掛ける。GitHub 現行UIの既定は【Rulesets】＝ Settings→Rules→Rulesets→New branch ruleset。ハマりどころ3点(外すと作っても効かない)＝(1)Enforcement status を『Active』にする(既定Disabledのまま放置しない) (2)Target branches→Add target→『Include default branch』を選ぶ(未設定だと『Applies to 0 targets』で無効) (3)『Require status checks to pass』にチェックし ci-green を追加→Create。※従来の Settings→Branches の branch protection でも可(pattern に main→ci-green)。最初のPRが1回走った後、同じ画面に戻り roadmap-required も必須チェックに追加(手順0-c)。詳細は AGENTS.md『新規案件の初期化フロー』手順0。",
         "3. ヒアリング→リサーチ→提案→承認：AGENTS.md『新規案件の初期化フロー 1〜4』でスタック(クラウド/言語/FW/パッケージ/DB/認証/IaC/テスト/CI/Lint)を確定する。黙って進めない＝ユーザーの明示OKを取る。",
         "4. 設定：承認された構成を、案件の AGENTS.md(presets/_TEMPLATE.md を複製)に宣言する。",
         "5. 原子ツリー作成(第一成果物)：案件のゴールを頂点に、この roadmap.html の nodes を原子レベル(1葉=1事実=1verify)まで描き直す。ROOT プレースホルダは破棄。各葉に criteria/verify を置く。",
