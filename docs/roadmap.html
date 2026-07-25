@@ -117,11 +117,11 @@
 {
   "meta": {
     "title": "中小企業 課題解決サポート教材（12コマ伴走プログラム）を完成させる",
-    "active": "D2",
-    "next": "D2（リモートの画面共有下で概算を入力・変更し、結果が即時に反映・共有できる）に着手する。D1エンジン(apps/web/lib/estimate.ts)を叩くUIをapps/webに実装し、リモート通しデモの記録(公開URL/録画リンク)をevidenceにする。D2は機械で白黒つかない受入(実演)なのでindependent-verifierの出番＝デモ段取りを着手時に決める。D3(公開URLで200＋マーカー、deps D1・D2)はVercelデプロイが要る。※C(各コマの中身)はマスターの指示でDを先行させたため後回し(C-1bが中核として待機)。",
+    "active": "C-1a",
+    "next": "C-1a（コマ1が、リモートの通しリハーサルでその回の到達点を満たして成立する）を進める。docs/curriculum/session-01-remote-roadmap.md に作ったスライド構成＋90分進行台本を使って、リモート通しリハを実施し、公開URL/録画リンクを evidence にする。C-1a が成立したら C-1b（90分以内に顧客の原子ロードマップが実際に確定する）へ進む。マスター指示により D2 ではなく C 枝を優先する。",
     "handoff": {
-      "done": "D1（概算エンジン）を完了。apps/web/lib/estimate.ts にA3 DP-6を実装＝pertExpected/pertStdDev(三点/PERT)・coneRange(Cone of Uncertainty)・estimate(工数→コスト/期間をレンジ+confidence)・recalcWithChange(要件変更→工数の即時再計算=Dの中核)。apps/web/tests/estimate.test.ts に代表18ケースの実Vitestテスト。pnpm -r typecheck/lint/test(ui3+web20)/build/audit すべてローカル緑。evidenceは変更を含むcommit ce48cb8(CI ci-greenが同一変更の緑を保証)。マスター指示でB完了後にDを先行(Cより先)。",
-      "trouble": "無し（新規の環境トラブルなし）。申し送り：(a)D2/D3は実演・Vercelデプロイが要る＝ドキュメントと違い機械だけで閉じない。D2はデモ録画/公開URL、D3はVercel公開URLの200+マーカーが要る。段取り(誰がデモするか・Vercelプロジェクト有無)を着手時に確認。(b)Cは後回し中(C-1bが中核)。マスターがCに戻す指示を出すまでDを進める。(c)B1コマ9/10/12はC-2to12展開時に1事実へ割り直す。(d)A2残り4領域は付け足し待機。(e)auto-merge.ymlは緑のopen PRを即squashマージ＝1PR=1ノード厳守。"
+      "done": "マスター指示で C 枝を優先する方針へ切り替え。C-1a の途中成果物として docs/curriculum/session-01-remote-roadmap.md を追加し、コマ1のリモート初回教材（スライド構成、90分進行、講師台本、成果物チェック、通しリハ観察項目）を作成した。C-1a の受入 evidence はリモート通しリハ記録が必要なため未充足のまま残す。",
+      "trouble": "無し。注意：C-1a/C-1b はどちらもリモート実演・録画/公開URLが必要で、ドキュメント追加だけでは done にしない。D2 は保留中。C-2to12 は B1 確定済みなので、C-1 の後にコマ単位へ遅延展開する。"
     },
     "updated": "2026-07-25"
   },
@@ -210,7 +210,7 @@
                 { "id":"C-1a", "kind":"state",
                   "theme":"コマ1が、リモートの通しリハーサルでその回の到達点を満たして成立する",
                   "meaning":"スライド一式＋進行が通しで成立",
-                  "detail":"1事実：初回コマがリモートで成立する",
+                  "detail":"1事実：初回コマがリモートで成立する。教材案は docs/curriculum/session-01-remote-roadmap.md に作成済み。通しリハ記録で受入する",
                   "criteria":[ { "text":"コマ1のスライド一式と進行が、リモート環境でその回の到達点を満たし、通しリハーサルで成立する", "verify":"コマ1のスライド公開物と、リモート通しリハーサルの記録（公開URL/録画リンク）が到達点を満たすことを確認する", "evidence":"" } ] },
                 { "id":"C-1b", "kind":"state",
                   "theme":"初回90分のコマで、顧客の原子レベルの解決ロードマップが実際に確定する",
