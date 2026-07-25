@@ -36,6 +36,46 @@ export const INITIAL_FORM_STATE: EstimateFormState = {
   scopeChange: null,
 };
 
+/**
+ * 入力欄の編集中の生テキスト（ThreePoint の各項目を文字列で保持する）。
+ * 数値へは deriveEstimateView に渡す直前まで変換しない。ここで即数値化して
+ * フォールバックすると、空欄化や負値・小数の入力途中（"-" や ""）が
+ * 直前の値に押し戻され、編集不能になるため。
+ */
+export interface ThreePointDraft {
+  optimistic: string;
+  mostLikely: string;
+  pessimistic: string;
+}
+
+/** 空文字は NaN にする（Number("") は 0 になり空欄と 0 を区別できないため）。 */
+function parseDraftNumber(raw: string): number {
+  return raw.trim() === "" ? NaN : Number(raw);
+}
+
+/** 編集中のテキストを ThreePoint（数値）へ変換する。不正な値は NaN のまま返し、判定は estimate.ts に委ねる。 */
+export function draftToThreePoint(draft: ThreePointDraft): ThreePoint {
+  return {
+    optimistic: parseDraftNumber(draft.optimistic),
+    mostLikely: parseDraftNumber(draft.mostLikely),
+    pessimistic: parseDraftNumber(draft.pessimistic),
+  };
+}
+
+/** ThreePoint を編集用テキストへ変換する（初期値の表示用）。 */
+export function threePointToDraft(point: ThreePoint): ThreePointDraft {
+  return {
+    optimistic: String(point.optimistic),
+    mostLikely: String(point.mostLikely),
+    pessimistic: String(point.pessimistic),
+  };
+}
+
+/** 空欄は「未入力」として null（オプション項目 dayRate/capacityPerDay 用）。 */
+export function parseOptionalNumberDraft(raw: string): number | null {
+  return raw.trim() === "" ? null : Number(raw);
+}
+
 function buildInput(state: EstimateFormState): EstimateInput {
   const input: EstimateInput = { effort: state.effort };
   if (state.dayRate !== null) input.dayRate = state.dayRate;
