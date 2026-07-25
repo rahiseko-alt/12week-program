@@ -183,3 +183,23 @@
 - 教訓：①CI 赤を見たら**まず自分のdiff起因か advisory/base起因かを切り分ける**（audit ログの Package/GHSA を読む）。
   ②依存脆弱性は `pnpm.overrides` の**範囲指定（`pkg@<patched`: `>=patched`）**でピンポイント修正し、必ずローカルで全チェック緑まで確認してから push。
   ③`roadmap-required` 環境では**"無関係な修正"も roadmap 更新PRに同梱する**のが構造上正しい（単独PRは弾かれる）。
+
+## 2026-07-25 セッション環境からnpmレジストリに到達できずローカルの型/Lint/テスト/ビルド/auditが実行不能だった（D2実装セッション）
+- 事象：D2（概算UI）実装後、AGENTS.md の「コミット前に必ずワークスペース全体のチェックを緑にする」に従い
+  `pnpm install --frozen-lockfile` を実行したところ、`@swc/helpers` 等のtarball取得で `ERR_PNPM_FETCH_403`。
+  `registry.npmjs.org` への直接curl・プロキシ経由curlのどちらも403。pnpmの仮想ストア(`node_modules/.pnpm/*`)には
+  パッケージ名のディレクトリだけが存在し中身(tarball展開後の実体)が空という状態で、実際にはほぼ何も取得できていなかった。
+- 根因：このセッションの egress ポリシーで `registry.npmjs.org` へのアクセスが拒否されていた
+  （`/root/.ccr/README.md` の分類でいう「403 = org policy denial、リトライ・迂回禁止、報告のみ」に該当）。
+  過去セッション（D1実装時など）は同じリポジトリでも通っていた形跡があり、セッションごとにネットワークポリシーが
+  異なりうる。
+- 対処：ローカルでの機械検証を諦めず代替を積んだ——①グローバル（`/opt/node22`配下）の prettier で追加ファイルの
+  構文パースが通ることを確認、②型・エクスポート名は依存先ファイル（lib/estimate.ts）と手動で照合、③テストの期待値は
+  PERT計算を手計算で検算、④ネットワーク不要な `node scripts/verify-roadmap-evidence.mjs` はローカル実行して緑を確認。
+  その上で「ローカルでは typecheck/lint/test/build/audit を実行できなかった」ことを handoff.trouble と meta.next に
+  明記し、CI（ネットワークのあるGitHub Actions側）での確認を次アクションとして引き継いだ。
+- 教訓：**セッションのネットワークポリシーは毎回同じとは限らない**。`pnpm install` が失敗したら早めに
+  `curl -sS $HTTPS_PROXY/__agentproxy/status` と直接curlで「一時的な障害か org policy denial か」を切り分け、
+  denial ならリトライで粘らず（README方針どおり）代替検証に切り替えて時間を浪費しない。**ローカル全緑にできない
+  ときは、それを隠さず handoff/次の一手に明記し、CIでの確認をタスクとして必ず引き継ぐ**（本人採点で「多分大丈夫」と
+  コミットしない）。
