@@ -117,11 +117,11 @@
 {
   "meta": {
     "title": "中小企業 課題解決サポート教材（12コマ伴走プログラム）を完成させる",
-    "active": "A2",
-    "next": "A2（各分野の深掘り）に着手：A1で採用した初期7領域から、教材で使う原則・道具・落とし穴を出典つきで抽出し、A2を分野ごとの子（A2-領域）へ分解する。まず C-1b/初回設計に効く『6 構造的問題解決(MECE/イシューツリー)』『5 SSM/問題構造化』と、D に効く『7 見積り工学』を優先深掘り。並行して A1 を independent-verifier で敵対確認する。",
+    "active": "A3",
+    "next": "A3（設計原則集への統合）に着手：A2で深掘り済みの優先3領域（⑥構造的問題解決/⑤SSM/⑦見積り工学）を、重複排除・矛盾解決・優先順位づけして『設計原則→対応するコマ/設計項目(B/C-1b/D)』のマッピング表に統合する。並行して、残る領域（①業績マネジメント/②経営工学/③教育設計/④行動経済学）はA2に子を付け足して深掘り（可変100の付け足し）。一次情報（Minto/Checkland/Boehm等の原著）への格上げもA3で行う。",
     "handoff": {
-      "done": "A1（学問の洗い出し）を実施：Webリサーチで一次情報を確認し、docs/research/A1-disciplines.md に『中小企業改善に効く学問7領域＋なぜ効くか＋一次情報リンク＋支える枝(B/C/D/F)』を作成。A1 の evidence を公開URL（当ファイルの main blob）で充足。採用7領域＝(1)業績マネジメント (2)経営工学(TOC/リーン) (3)教育設計/成人学習 (4)行動経済学/ナッジ (5)システム思考/SSM (6)コンサルの構造的問題解決(MECE/イシューツリー) (7)見積り工学。meta.active を A2 へ前進。",
-      "trouble": "A1 の done は evidence（公開URL）で機械充足させたが、内容の妥当性は independent-verifier での敵対確認を次に回している（本人採点にしない）。A2/C-2〜12 は上流確定後に遅延展開する前提で現時点は各1ノードに集約。"
+      "done": "A1をindependent-verifierでPASS確認（done確定）。続けてA2（各分野の深掘り）の優先3領域を実施：docs/research/ に A2-06(構造的問題解決 MECE/イシューツリー/仮説思考/ピラミッド原則)、A2-05(システム思考・SSM CATWOE/リッチピクチャ/根本定義)、A2-07(見積り工学 Cone of Uncertainty/三点見積り/COCOMO/スコープクリープ)を、原則・道具・落とし穴・教材への落とし込み・出典つきで作成。A2を分野ごとの子(A2-6/5/7)へ分解し各evidenceを公開URLで充足。meta.active を A3 へ前進。",
+      "trouble": "A2は優先3領域のみ採用＝残り4領域は付け足し（子追加でA2ゲート再オープン）で扱う前提。独立検証(independent-verifier)は着手後の本人採点禁止のため各葉done時に随時実施。出典は準一次情報が混在し、A3で原著へ格上げ予定（independent-verifierのA1申し送りに対応）。"
     },
     "updated": "2026-07-25"
   },
@@ -143,10 +143,29 @@
               "criteria":[ { "text":"中小企業改善に資する学問領域が、各々の選定理由（なぜ効くか）つきで公開物として列挙されている", "verify":"公開URL または commit に、領域リストと各領域の選定理由が載っていることを確認する", "evidence":"https://github.com/rahiseko-alt/test/blob/main/docs/research/A1-disciplines.md" } ] },
             { "id":"A2", "kind":"state",
               "theme":"採用した各分野から、教材で使う原則・道具・注意点が取り出せている",
-              "meaning":"まず3〜5分野を採用して深掘りし、随時付け足す",
-              "detail":"A1確定後、分野ごとの子（A2-領域）へ分解する（遅延展開）。未採用分野は『[採用時のみ]』の待機枠。現時点は集約1ノード",
+              "meaning":"優先3領域（⑥構造的問題解決/⑤システム思考SSM/⑦見積り工学）を深掘り済み。残る領域は付け足しで追加",
+              "detail":"A1確定後に分野ごとの子（A2-領域）へ分解。現在の採用＝C-1b（初回設計）と D（概算アプリ）を支える優先3領域。残り（①②③④）は採用時に子を追加＝付け足しで親ゲート再オープン（可変100の実演）",
               "deps":["A1"],
-              "criteria":[ { "text":"採用した各分野について、教材に組み込む原則・道具・典型的な落とし穴が、一次情報の出典つきで文書化されている", "verify":"採用分野ごとのメモ（公開URL/commit）に、原則・道具・落とし穴と出典リンクがあることを確認する", "evidence":"" } ] },
+              "children": [
+                { "id":"A2-6", "kind":"state",
+                  "theme":"構造的問題解決（MECE/イシューツリー/仮説思考）の原則・道具・落とし穴が取り出せている",
+                  "meaning":"初回でのイシューツリー化＝原子ロードマップ法の裏づけ",
+                  "detail":"C-1b（初回90分でロードマップ確定）と B（骨格）を支える",
+                  "deps":["A1"],
+                  "criteria":[ { "text":"領域⑥から、教材に組み込む原則・道具・典型的な落とし穴が出典つきで文書化されている", "verify":"docs/research/A2-06-structured-problem-solving.md に原則・道具・落とし穴と出典リンクがあることを確認する", "evidence":"https://github.com/rahiseko-alt/test/blob/main/docs/research/A2-06-structured-problem-solving.md" } ] },
+                { "id":"A2-5", "kind":"state",
+                  "theme":"システム思考・SSM（問題構造化）の原則・道具・落とし穴が取り出せている",
+                  "meaning":"初回の問題構造化（リッチピクチャ/CATWOE/根本定義）の裏づけ",
+                  "detail":"C-1b と B1 を支える。ソフトな問題を決めつけず構造化してから解く型",
+                  "deps":["A1"],
+                  "criteria":[ { "text":"領域⑤から、教材に組み込む原則・道具・典型的な落とし穴が出典つきで文書化されている", "verify":"docs/research/A2-05-systems-ssm.md に原則・道具・落とし穴と出典リンクがあることを確認する", "evidence":"https://github.com/rahiseko-alt/test/blob/main/docs/research/A2-05-systems-ssm.md" } ] },
+                { "id":"A2-7", "kind":"state",
+                  "theme":"見積り工学（工数/コスト見積り・要件変更の影響管理）の原則・道具・落とし穴が取り出せている",
+                  "meaning":"概算アプリDのロジックとB2（可変100）の裏づけ",
+                  "detail":"D（要件変更→工数）と B2（スコープクリープ＝付け足しの見積り反映）を支える",
+                  "deps":["A1"],
+                  "criteria":[ { "text":"領域⑦から、教材に組み込む原則・道具・典型的な落とし穴が出典つきで文書化されている", "verify":"docs/research/A2-07-estimation.md に原則・道具・落とし穴と出典リンクがあることを確認する", "evidence":"https://github.com/rahiseko-alt/test/blob/main/docs/research/A2-07-estimation.md" } ] }
+              ] },
             { "id":"A3", "kind":"state",
               "theme":"バラバラの分野の学びが、各コマ設計に使える設計原則集に一本化されている",
               "meaning":"重複排除・矛盾解決・優先順位づけ済み",
