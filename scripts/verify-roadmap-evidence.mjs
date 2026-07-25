@@ -46,6 +46,7 @@ function main() {
 
   const ids = new Set();
   const violations = [];
+  const depsMap = new Map(); // id -> [依存先id...]（道順/依存。時系列は背骨でなくここで表す）
 
   let decomposed = 0; // 子を持つ（分解された）ノード数
   let leavesWithCriteria = 0; // 受入条件を持つ葉状態の数
@@ -53,6 +54,7 @@ function main() {
   for (const root of data.nodes) {
     walk(root, (node) => {
       if (node.id) ids.add(node.id);
+      if (node.id && Array.isArray(node.deps)) depsMap.set(node.id, node.deps);
       const hasChildren = Array.isArray(node.children) && node.children.length > 0;
       if (hasChildren) decomposed++;
       if (!hasChildren && Array.isArray(node.criteria) && node.criteria.length > 0) {
@@ -69,6 +71,52 @@ function main() {
         }
       }
     });
+  }
+
+  // deps（依存関係）の機械検査：実在IDを指すか＋循環がないか。
+  // 依存は「道順」であって背骨ではない。ここで実在・非循環を機械強制し、壊れた依存を CI で弾く。
+  for (const [id, deps] of depsMap) {
+    for (const d of deps) {
+      if (!ids.has(d)) {
+        violations.push(
+          `${id}: deps "${d}" は実在ノードIDを指していません（依存先が存在しない）`,
+        );
+      }
+      if (d === id) {
+        violations.push(`${id}: deps が自分自身を指しています（自己依存）`);
+      }
+    }
+  }
+  // 循環検出（DFS。3色マーキングで back-edge を見つける）。
+  {
+    const WHITE = 0, GRAY = 1, BLACK = 2;
+    const color = new Map();
+    const cyclePath = [];
+    let cycleFound = null;
+    const dfs = (id, stack) => {
+      if (cycleFound) return;
+      color.set(id, GRAY);
+      for (const d of depsMap.get(id) || []) {
+        if (!ids.has(d)) continue; // 実在チェックは上で別途報告済み
+        const c = color.get(d) ?? WHITE;
+        if (c === GRAY) {
+          cycleFound = [...stack, id, d];
+          return;
+        }
+        if (c === WHITE) dfs(d, [...stack, id]);
+        if (cycleFound) return;
+      }
+      color.set(id, BLACK);
+    };
+    for (const id of depsMap.keys()) {
+      if ((color.get(id) ?? WHITE) === WHITE) dfs(id, []);
+      if (cycleFound) break;
+    }
+    if (cycleFound) {
+      violations.push(
+        `deps に循環があります（依存は道順であって循環してはいけない）: ${cycleFound.join(" → ")}`,
+      );
+    }
   }
 
   const meta = data.meta || {};
