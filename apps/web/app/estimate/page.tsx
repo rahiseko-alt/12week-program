@@ -45,8 +45,8 @@ function ThreePointInputs({
         <label className="flex flex-col text-xs text-gray-600">
           楽観
           <input
-            type="number"
-            step="any"
+            type="text"
+            inputMode="decimal"
             className="w-24 rounded border border-gray-300 px-2 py-1 text-sm"
             value={value.optimistic}
             onChange={(e) => onChange({ ...value, optimistic: e.target.value })}
@@ -55,8 +55,8 @@ function ThreePointInputs({
         <label className="flex flex-col text-xs text-gray-600">
           最頻
           <input
-            type="number"
-            step="any"
+            type="text"
+            inputMode="decimal"
             className="w-24 rounded border border-gray-300 px-2 py-1 text-sm"
             value={value.mostLikely}
             onChange={(e) => onChange({ ...value, mostLikely: e.target.value })}
@@ -65,8 +65,8 @@ function ThreePointInputs({
         <label className="flex flex-col text-xs text-gray-600">
           悲観
           <input
-            type="number"
-            step="any"
+            type="text"
+            inputMode="decimal"
             className="w-24 rounded border border-gray-300 px-2 py-1 text-sm"
             value={value.pessimistic}
             onChange={(e) => onChange({ ...value, pessimistic: e.target.value })}
@@ -120,8 +120,8 @@ export default function EstimatePage() {
           <label className="flex flex-col text-xs text-gray-600">
             単価（1人日あたり）
             <input
-              type="number"
-              step="any"
+              type="text"
+              inputMode="decimal"
               className="w-32 rounded border border-gray-300 px-2 py-1 text-sm"
               value={dayRateDraft}
               placeholder="未入力"
@@ -131,8 +131,8 @@ export default function EstimatePage() {
           <label className="flex flex-col text-xs text-gray-600">
             稼働能力（人日/暦日）
             <input
-              type="number"
-              step="any"
+              type="text"
+              inputMode="decimal"
               className="w-32 rounded border border-gray-300 px-2 py-1 text-sm"
               value={capacityDraft}
               placeholder="未入力"
