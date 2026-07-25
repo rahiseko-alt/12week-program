@@ -9,16 +9,15 @@ import { useMemo, useState } from "react";
 import {
   INITIAL_FORM_STATE,
   deriveEstimateView,
+  draftToThreePoint,
+  parseOptionalNumberDraft,
+  threePointToDraft,
   type EstimateFormState,
+  type ThreePointDraft,
 } from "../../lib/estimateForm";
-import type { Range, ThreePoint } from "../../lib/estimate";
+import type { Range } from "../../lib/estimate";
 
 type ScopeKind = "none" | "add" | "remove";
-
-function toNumber(raw: string, fallback: number): number {
-  const n = Number(raw);
-  return Number.isFinite(n) ? n : fallback;
-}
 
 function formatRange(range: Range, unit: string): string {
   return `${range.low.toFixed(1)} 〜 ${range.high.toFixed(1)} ${unit}（期待値 ${range.expected.toFixed(1)}）`;
@@ -36,8 +35,8 @@ function ThreePointInputs({
   onChange,
 }: {
   label: string;
-  value: ThreePoint;
-  onChange: (next: ThreePoint) => void;
+  value: ThreePointDraft;
+  onChange: (next: ThreePointDraft) => void;
 }) {
   return (
     <fieldset className="flex flex-col gap-2 rounded-md border border-gray-300 p-3">
@@ -47,33 +46,30 @@ function ThreePointInputs({
           楽観
           <input
             type="number"
+            step="any"
             className="w-24 rounded border border-gray-300 px-2 py-1 text-sm"
             value={value.optimistic}
-            onChange={(e) =>
-              onChange({ ...value, optimistic: toNumber(e.target.value, value.optimistic) })
-            }
+            onChange={(e) => onChange({ ...value, optimistic: e.target.value })}
           />
         </label>
         <label className="flex flex-col text-xs text-gray-600">
           最頻
           <input
             type="number"
+            step="any"
             className="w-24 rounded border border-gray-300 px-2 py-1 text-sm"
             value={value.mostLikely}
-            onChange={(e) =>
-              onChange({ ...value, mostLikely: toNumber(e.target.value, value.mostLikely) })
-            }
+            onChange={(e) => onChange({ ...value, mostLikely: e.target.value })}
           />
         </label>
         <label className="flex flex-col text-xs text-gray-600">
           悲観
           <input
             type="number"
+            step="any"
             className="w-24 rounded border border-gray-300 px-2 py-1 text-sm"
             value={value.pessimistic}
-            onChange={(e) =>
-              onChange({ ...value, pessimistic: toNumber(e.target.value, value.pessimistic) })
-            }
+            onChange={(e) => onChange({ ...value, pessimistic: e.target.value })}
           />
         </label>
       </div>
@@ -82,20 +78,27 @@ function ThreePointInputs({
 }
 
 export default function EstimatePage() {
-  const [form, setForm] = useState<EstimateFormState>(INITIAL_FORM_STATE);
+  const [effortDraft, setEffortDraft] = useState<ThreePointDraft>(
+    threePointToDraft(INITIAL_FORM_STATE.effort),
+  );
+  const [dayRateDraft, setDayRateDraft] = useState("");
+  const [capacityDraft, setCapacityDraft] = useState("");
   const [scopeKind, setScopeKind] = useState<ScopeKind>("none");
-  const [scopeEffort, setScopeEffort] = useState<ThreePoint>({
-    optimistic: 0,
-    mostLikely: 0,
-    pessimistic: 0,
+  const [scopeEffortDraft, setScopeEffortDraft] = useState<ThreePointDraft>({
+    optimistic: "0",
+    mostLikely: "0",
+    pessimistic: "0",
   });
 
   const effectiveForm = useMemo<EstimateFormState>(
     () => ({
-      ...form,
-      scopeChange: scopeKind === "none" ? null : { kind: scopeKind, effort: scopeEffort },
+      effort: draftToThreePoint(effortDraft),
+      dayRate: parseOptionalNumberDraft(dayRateDraft),
+      capacityPerDay: parseOptionalNumberDraft(capacityDraft),
+      scopeChange:
+        scopeKind === "none" ? null : { kind: scopeKind, effort: draftToThreePoint(scopeEffortDraft) },
     }),
-    [form, scopeKind, scopeEffort],
+    [effortDraft, dayRateDraft, capacityDraft, scopeKind, scopeEffortDraft],
   );
 
   const view = useMemo(() => deriveEstimateView(effectiveForm), [effectiveForm]);
@@ -109,11 +112,7 @@ export default function EstimatePage() {
         </p>
       </div>
 
-      <ThreePointInputs
-        label="工数（person-day）"
-        value={form.effort}
-        onChange={(effort) => setForm((prev) => ({ ...prev, effort }))}
-      />
+      <ThreePointInputs label="工数（person-day）" value={effortDraft} onChange={setEffortDraft} />
 
       <fieldset className="flex flex-col gap-2 rounded-md border border-gray-300 p-3">
         <legend className="px-1 text-sm font-medium">単価・稼働（任意）</legend>
@@ -122,30 +121,22 @@ export default function EstimatePage() {
             単価（1人日あたり）
             <input
               type="number"
+              step="any"
               className="w-32 rounded border border-gray-300 px-2 py-1 text-sm"
-              value={form.dayRate ?? ""}
+              value={dayRateDraft}
               placeholder="未入力"
-              onChange={(e) =>
-                setForm((prev) => ({
-                  ...prev,
-                  dayRate: e.target.value === "" ? null : toNumber(e.target.value, 0),
-                }))
-              }
+              onChange={(e) => setDayRateDraft(e.target.value)}
             />
           </label>
           <label className="flex flex-col text-xs text-gray-600">
             稼働能力（人日/暦日）
             <input
               type="number"
+              step="any"
               className="w-32 rounded border border-gray-300 px-2 py-1 text-sm"
-              value={form.capacityPerDay ?? ""}
+              value={capacityDraft}
               placeholder="未入力"
-              onChange={(e) =>
-                setForm((prev) => ({
-                  ...prev,
-                  capacityPerDay: e.target.value === "" ? null : toNumber(e.target.value, 0),
-                }))
-              }
+              onChange={(e) => setCapacityDraft(e.target.value)}
             />
           </label>
         </div>
@@ -168,8 +159,8 @@ export default function EstimatePage() {
         {scopeKind !== "none" && (
           <ThreePointInputs
             label="変更分の工数（person-day）"
-            value={scopeEffort}
-            onChange={setScopeEffort}
+            value={scopeEffortDraft}
+            onChange={setScopeEffortDraft}
           />
         )}
       </fieldset>

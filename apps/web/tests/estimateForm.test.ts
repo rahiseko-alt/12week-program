@@ -3,6 +3,9 @@ import { describe, expect, it } from "vitest";
 import {
   INITIAL_FORM_STATE,
   deriveEstimateView,
+  draftToThreePoint,
+  parseOptionalNumberDraft,
+  threePointToDraft,
   type EstimateFormState,
 } from "../lib/estimateForm";
 
@@ -65,5 +68,43 @@ describe("deriveEstimateView: 要件変更→即時再計算", () => {
     };
     const view = deriveEstimateView(state);
     expect(view.recalc?.deltaEffort).toBeLessThan(0);
+  });
+});
+
+// CodeRabbit指摘（PR#13）の再発防止：入力欄を空にした/負値を打ち始めた際に
+// 直前の値へ押し戻される（Number("")===0, Number("-")===NaN でフォールバックしていた）
+// 事故が無いことを、DOM無しで draft⇄ThreePoint 変換の単体テストとして固定する。
+describe("draftToThreePoint / threePointToDraft / parseOptionalNumberDraft", () => {
+  it("空文字は 0 ではなく NaN になる（Number('')===0 に丸められない）", () => {
+    const point = draftToThreePoint({ optimistic: "", mostLikely: "4", pessimistic: "12" });
+    expect(point.optimistic).toBeNaN();
+  });
+
+  it("空欄のまま deriveEstimateView に渡すと、直前値への差し戻しではなくエラーになる", () => {
+    const state: EstimateFormState = {
+      ...INITIAL_FORM_STATE,
+      effort: draftToThreePoint({ optimistic: "", mostLikely: "4", pessimistic: "12" }),
+    };
+    const view = deriveEstimateView(state);
+    expect(view.result).toBeNull();
+    expect(view.error).toMatch(/有限の数値/);
+  });
+
+  it("小数・負の入力途中('-'単体)も NaN として扱われ、サイレントに丸められない", () => {
+    expect(draftToThreePoint({ optimistic: "1.5", mostLikely: "2", pessimistic: "3" }).optimistic).toBe(
+      1.5,
+    );
+    expect(draftToThreePoint({ optimistic: "-", mostLikely: "2", pessimistic: "3" }).optimistic).toBeNaN();
+  });
+
+  it("threePointToDraft は draftToThreePoint の逆変換になる（往復一致）", () => {
+    const original = { optimistic: 1.5, mostLikely: 2, pessimistic: 3 };
+    expect(draftToThreePoint(threePointToDraft(original))).toEqual(original);
+  });
+
+  it("parseOptionalNumberDraft は空文字を null、それ以外は数値にする", () => {
+    expect(parseOptionalNumberDraft("")).toBeNull();
+    expect(parseOptionalNumberDraft("  ")).toBeNull();
+    expect(parseOptionalNumberDraft("50000")).toBe(50000);
   });
 });
