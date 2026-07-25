@@ -118,10 +118,10 @@
   "meta": {
     "title": "中小企業 課題解決サポート教材（12コマ伴走プログラム）を完成させる",
     "active": "A3",
-    "next": "A3（設計原則集への統合）に着手：A2で深掘り済みの優先3領域（⑥構造的問題解決/⑤SSM/⑦見積り工学）を、重複排除・矛盾解決・優先順位づけして『設計原則→対応するコマ/設計項目(B/C-1b/D)』のマッピング表に統合する。並行して、残る領域（①業績マネジメント/②経営工学/③教育設計/④行動経済学）はA2に子を付け足して深掘り（可変100の付け足し）。一次情報（Minto/Checkland/Boehm等の原著）への格上げもA3で行う。",
+    "next": "【次回ここから／マスターの選択待ち】既定はA3（設計原則集への統合）：A2の優先3領域（⑥構造的問題解決/⑤SSM/⑦見積り工学）を重複排除・矛盾解決・優先順位づけして『設計原則→対応するコマ/設計項目(B/C-1b/D)』のマッピング表に統合し、一次情報（Minto/Checkland/Boehm等の原著）へ格上げ。ただしマスターに3択（1:A3統合[既定] / 2:残り4領域①②③④をA2に付け足して深掘り / 3:研究は十分としてB骨格・C-1b初回設計・D概算アプリの実物づくりへ）を提示し未回答。次回冒頭でこの選択を確認してから着手する。",
     "handoff": {
-      "done": "A1をindependent-verifierでPASS確認（done確定）。続けてA2（各分野の深掘り）の優先3領域を実施：docs/research/ に A2-06(構造的問題解決 MECE/イシューツリー/仮説思考/ピラミッド原則)、A2-05(システム思考・SSM CATWOE/リッチピクチャ/根本定義)、A2-07(見積り工学 Cone of Uncertainty/三点見積り/COCOMO/スコープクリープ)を、原則・道具・落とし穴・教材への落とし込み・出典つきで作成。A2を分野ごとの子(A2-6/5/7)へ分解し各evidenceを公開URLで充足。meta.active を A3 へ前進。",
-      "trouble": "A2は優先3領域のみ採用＝残り4領域は付け足し（子追加でA2ゲート再オープン）で扱う前提。独立検証(independent-verifier)は着手後の本人採点禁止のため各葉done時に随時実施。出典は準一次情報が混在し、A3で原著へ格上げ予定（independent-verifierのA1申し送りに対応）。"
+      "done": "セッション全体：(0)機械強制を有効化（mainのRuleset＝Active+対象main+ci-green必須、後にroadmap-requiredも追加）。手順doc(手順0-b/nav)をRulesets既定＋有効化3点へ是正しPR#1でmain反映。(1)白紙テンプレ卒業→教材ゴールの原子ツリー作成、basis-reviewerの敵対検証(objection7件)を反映(C-1分割/B1絞込/F追加/E1強化/可変100の再凍結)、依存はdepsで表しverify-roadmap-evidence.mjsにdeps検査(実在ID/循環)を追加(PR#2)。(2)A1(学問7領域の洗い出し)を作成しindependent-verifierでPASS(PR#3)。(3)A2優先3領域(⑥⑤⑦)を深掘りし分野ごとに分解(PR#4)。現在 meta.active=A3。",
+      "trouble": "途中でpnpm auditが新規advisory(brace-expansion<=5.0.7のDoS)で赤化→pnpm.overridesで>=5.0.8へ修正しPR#2に同梱(roadmap-requiredがある為audit単独PRは作れない)。詳細はdocs/failures.md。／stop-hookが毎マージ後にsquashマージコミット(GitHub名義)をUnverified警告するが、書き換え不可なので想定内として無視している。／A2は優先3領域のみ採用＝残り4領域は付け足しで扱う前提。出典は準一次が混在しA3で原著へ格上げ予定。"
     },
     "updated": "2026-07-25"
   },

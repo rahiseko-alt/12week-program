@@ -171,3 +171,15 @@
 - 教訓：**UI 手順 doc は「そのツールの現行の既定経路」に追従させる**（否定形で古い前提を絶対化しない）。設定は「作れたか」でなく
   「**Active かつ対象が1件以上で実際に適用されているか**」まで書く／確かめる。実操作で詰まった箇所は、その場の口頭ナビで終わらせず
   **必ず doc(手順0・nav)に反映**して次コピーでの再発を断つ。
+
+## 2026-07-25 自分の diff と無関係に pnpm audit が新規 advisory で赤化しマージを塞いだ
+- 事象：roadmap ツリー作成のPR#2で CI が赤。原因は自分の変更ではなく、新規公表の advisory
+  GHSA-mh99-v99m-4gvg（brace-expansion <=5.0.7 の DoS）を `pnpm audit --audit-level moderate` が検出。lockfile に
+  実際の脆弱版 `brace-expansion@5.0.7` が推移依存で入っていた（前日まで緑＝時刻ベースで新規赤化＝base の main でも赤化する条件）。
+- 根因：依存の脆弱性は"自分のdiffと無関係"に時刻で赤化しうる。加えて `roadmap-required`（全PRに roadmap 差分必須）があるため
+  **audit 修正だけの単独PRは作れない**（roadmap 差分ゼロで弾かれる）。この2制約で「無関係な赤をどう緑にしてマージするか」で一瞬詰まる。
+- 対処：`pnpm.overrides` に `"brace-expansion@<5.0.8": ">=5.0.8"` を追加→ `pnpm install` で lockfile 更新→ 型/Lint/テスト/
+  ビルド/audit をローカル全緑確認→ **roadmap PR に同梱**して push。ブランチ保護の ci-green を満たしマージ成立。
+- 教訓：①CI 赤を見たら**まず自分のdiff起因か advisory/base起因かを切り分ける**（audit ログの Package/GHSA を読む）。
+  ②依存脆弱性は `pnpm.overrides` の**範囲指定（`pkg@<patched`: `>=patched`）**でピンポイント修正し、必ずローカルで全チェック緑まで確認してから push。
+  ③`roadmap-required` 環境では**"無関係な修正"も roadmap 更新PRに同梱する**のが構造上正しい（単独PRは弾かれる）。
