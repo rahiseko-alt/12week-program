@@ -359,3 +359,21 @@
   隠しやすい。1つの出典が1つの主張のためだけに引かれているか、個別に確認する。③「分割は妥当か（原子性）」
   と「分割後の中身は実際に基準を満たすか（充足性）」は別の検証軸。前者をbasis-reviewerで通しても、
   後者をindependent-verifierで確認しない限りdoneにしてはならない。
+
+## 2026-07-26 このセッションではWebFetch/curlが一般外部ドメインへ403で拒否され、追加した出典URLの到達性を直接確認できなかった
+- 事象：A2-6-b/A2-6-cの不合格理由（80/20・確証バイアスの個別出典欠如）を解消するため新しい出典URL（Management Consulted・
+  Slideworks・Simply Psychology）を追加する際、`WebFetch`と`curl`のどちらでもこれらのドメインへのHTTPS接続が403
+  （`curl -sS $HTTPS_PROXY/__agentproxy/status`の`recentRelayFailures`で`connect_rejected`・`gateway answered 403 to CONNECT`
+  と確認）で拒否された。既存の出典（umbrex.com等）や`en.wikipedia.org`など無関係なドメインへのテストfetchも同様に失敗し、
+  一般外部ドメインへのegressそのものがこのセッションのポリシーで遮断されていると判明した。一方`WebSearch`ツールは
+  正常に機能し、検索結果のタイトル・スニペットで出典の実在・内容整合は確認できた。
+- 根因：2026-07-25の「npmレジストリに到達できなかった」エントリと同型で、**セッションごとにネットワークポリシーが
+  異なりうる**。今回はnpmレジストリ（`pnpm install`）は正常に通ったが、一般Webドメインへのegressだけが拒否される
+  という、前回とは異なる切り分け方だった。
+- 対処：`WebFetch`/`curl`によるURL到達性の直接確認を諦め、`WebSearch`の検索結果（タイトル・要約）でURLの実在性・
+  内容整合性を確認する代替手段に切り替えた。この制約と代替手段を`meta.handoff.trouble`に明記して次セッションへ
+  引き継いだ。
+- 教訓：**出典URLを追加する作業では、まず`WebFetch`で1件試し、403（org policy denial）ならリトライで粘らず
+  `WebSearch`ベースの確認に切り替える**（`curl -sS $HTTPS_PROXY/__agentproxy/status`の`recentRelayFailures`で
+  一般的なegress遮断か個別ドメインの問題かを即座に切り分けられる）。到達性を直接確認できなかった旨は隠さず
+  handoffに明記し、次セッションでの再確認を促す。
