@@ -118,10 +118,10 @@
   "meta": {
     "title": "中小企業 課題解決サポート教材（12コマ伴走プログラム）を完成させる",
     "active": "C-1a-1",
-    "next": "C-1a-1（コマ1の教材一式が到達点をカバーする形で完成・公開されている）を進める。docs/curriculum/session-01-remote-roadmap.md のスライド構成＋90分進行台本を到達点に照らして完成させ、公開する。成立したら C-1a-2（それを実際にリモート通しリハで成立させる）へ進み、公開URL/録画リンクをevidenceにする。C-1aが成立したら C-1b（90分以内に顧客の原子ロードマップが実際に確定する）へ進む。並行して D2（リモートの画面共有下で講師と受講者が操作・結果共有できる）を本番URL（https://cc-v2-web.vercel.app/estimate）で、docs/demo/D2-remote-walkthrough.md の台本どおりにデモを実施し、録画リンク/実施記録を D2 の evidence に書き込む。成立したら D3（公開URL到達確認：/estimate が200＋期待マーカーを返すことをGETで確認）へ。C-2〜C-12は今回B1のコマ別設計表から各コマの到達点を転記済みのため、C-1完了後は着手順にdepsを辿って進める。両枝は並行進行のため、docs/roadmap.html 更新時は互いの直近コミットを取り込んでから編集し衝突を避けること。",
+    "next": "C-1a-1に着手（コマ1教材の完成・公開）。成立後はdeps順に C-1a-2 → C-1b へ、並行して D2 → D3 へ進む。C-1完了後は C-2〜C-12 をdeps順に着手。両枝並行のため、roadmap更新時は直近コミットを取り込んでから編集する。各ノードの受入条件・確認手順は該当ノードの criteria を参照。",
     "handoff": {
-      "done": "前回independent-verifierが不合格とした3葉（A2-6-b/A2-6-c/B2-a）を復旧。docs/research/A2-06-structured-problem-solving.mdの『道具』節に80/20（パレートの法則）・So-what分析、『落とし穴』節に確証バイアスの説明を追記し、それぞれ個別の出典（Management Consulted／Slideworks／Simply Psychology、WebSearchで実在を確認）を追加。docs/design/B2-change-and-dependency-rules.mdの『5. 要件変更時の再計画手順』に、既存の具体例A・Bと同水準の粒度で『具体例C：依存のズレ（増分納品の遅延）』を追加。3体のindependent-verifierで並行して敵対的に再検証させ、3葉とも合格（PASS）。コミット（f355072）してpush後、evidenceにそのcommitのblob permalinkを記入（本人採点にならないよう、内容評価は検証エージェント→evidence記入は機械的事実の記録のみに限定）。ローカルでtypecheck/lint/test/build/audit/roadmap-evidence-verify全て緑。なお本セッション冒頭のチェックインで、作業ブランチclaude/checkin-28ulzmが前回セッションのPR#18として既にmainへマージ・削除済みと判明したため、originのmainから同名ブランチを再作成して着手した。",
-      "trouble": "この環境ではWebFetch/curlが一般外部ドメインに対して403（プロキシのゲートウェイ拒否）になり、追加した出典URLの到達性を直接fetchで確認できなかった。WebSearchの検索結果（タイトル・スニペット）で内容の実在・妥当性を確認する代替手段を取った。次回セッションでWebFetchが使える場合は到達性を再確認するとよい。"
+      "done": "PR#19マージ後にCodeRabbitから届いた指摘のうち2件に対応：①B2-change-and-dependency-rules.mdの具体例Cへ、新期限の合意が不能な場合のエスカレーション手順を追加。②meta.handoff/meta.nextが各ノードのcriteria/evidenceと重複記述していたのを簡潔なポインタへ整理（本エントリ自体も対象）。3件目の指摘（criteria/verify書き換え）は実際のdiffと不一致（変更したのはdetail/evidenceのみ）と判断し対応不要（経緯はdocs/failures.md参照）。",
+      "trouble": "無し。"
     },
     "updated": "2026-07-26"
   },
