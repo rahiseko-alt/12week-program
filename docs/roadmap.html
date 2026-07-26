@@ -118,10 +118,10 @@
   "meta": {
     "title": "中小企業 課題解決サポート教材（12コマ伴走プログラム）を完成させる",
     "active": "C-1b",
-    "next": "C-1a-2・C-1bはいずれもリモート通しリハーサル（実演・録画）が要り、コード作業中心のセッションでは完結しない。設計（C-1a-1の教材／C-1bの台本）は完了済みなので、次はリハ実施の段取り（客役・録画・independent-verifierによる判定）を決めて実演するか、並行してD2（リモートデモ準備）→D3に進む。C-1完了後はC-2〜C-12をdeps順に着手。両枝並行のため、roadmap更新時は直近コミットを取り込んでから編集する。各ノードの受入条件・確認手順は該当ノードの criteria を参照。",
+    "next": "Hは本コミットで実装済み・evidenceは後続のごく小さいコミットでこのコミットのSHAを埋めて完了させる。その後の本線：C-1a-2・C-1bはいずれもリモート通しリハーサル（実演・録画）が要り、コード作業中心のセッションでは完結しない。設計（C-1a-1の教材／C-1bの台本）は完了済みなので、次はリハ実施の段取り（客役・録画・independent-verifierによる判定）を決めて実演するか、並行してD2（リモートデモ準備）→D3に進む。C-1完了後はC-2〜C-12をdeps順に着手。進捗タブ（Hの成果物）で見える通りC(1/14)・D(3/5)・E(0/2)・F(0/4)が未着手の大半を占める。両枝並行のため、roadmap更新時は直近コミットを取り込んでから編集する。各ノードの受入条件・確認手順は該当ノードの criteria を参照。",
     "handoff": {
-      "done": "C-1bの進行台本を作成（docs/design/C-1b-90min-script.md）。未マージの別ブランチPR#11の下書きを土台にした（詳細はコミット履歴参照）。",
-      "trouble": "無し。参考：PR#11（claude/checkin-ry4l92）は今回の内容と重複するため、マスター判断でクローズしてよい。"
+      "done": "マスターより『成果物をすべてリスト化して進捗を記録せよ、そのリスト自体もゴールに必要』との指示。AGENTS.mdの『handoffには進捗を書かない（二重管理禁止）』ルールと衝突するため事前に確認し、二重管理にならない案（ロードマップ本体に機械集計の新ノードHを追加）で合意を得て実施。ロードマップにH（12コマ教材・アプリ・実証・運用ガイド全成果物の状況が一覧で確認できる）を追加し、roadmap.htmlの描画エンジンに「進捗」タブを実装（A〜F配下の全state葉をnodesツリーから都度自動集計。手入力なし）。ヘッドレスChromeで実描画を確認済み（全体21/43件完了、branch別内訳も正しく表示）。",
+      "trouble": "マスターより『全然終わっていない、進捗が遅い』とのフィードバックあり。要因は進捗の全体像が一覧で見えていなかったことと判断し、H（進捗タブ）の追加で対応した。"
     },
     "updated": "2026-07-26"
   },
@@ -129,7 +129,7 @@
     { "id":"G", "kind":"state",
       "theme":"どんな中小企業の課題でも、初対面から約12週間後の解決まで伴走できる教材が完成し、現場で通用する",
       "meaning":"12コマ（通常60分/初回90分）・週1・初回で顧客の解決ロードマップ確定・コマ間は別チームが開発・課題が変わっても通用する伴走プログラム",
-      "detail":"G成立 ⟺ 設計根拠(A)・骨格(B)・各コマの中身(C)・現場ツール(D)・汎用性の実証(E)・運用/伴走(F) が全て成立（各々必要・合わせて十分）。依存/時系列は各ノードの deps で表す（背骨には置かない）",
+      "detail":"G成立 ⟺ 設計根拠(A)・骨格(B)・各コマの中身(C)・現場ツール(D)・汎用性の実証(E)・運用/伴走(F)・進捗可視化(H) が全て成立（各々必要・合わせて十分）。Hはマスターが進捗を都度一覧で把握できることが意思決定・検証の前提として必要なため追加（マスター指摘への対応）。依存/時系列は各ノードの deps で表す（背骨には置かない）",
       "children": [
         { "id":"A", "kind":"state",
           "theme":"教材の中身を設計する根拠が、関連学問のリサーチで揃っている",
@@ -478,7 +478,12 @@
               "detail":"1事実：第三者が回せる",
               "deps":["F1"],
               "criteria":[ { "text":"作った本人以外の第三者が、ガイドだけで12週間の通しリハを回せる", "verify":"第三者ドライランの記録（公開物/録画リンク）が成立することを確認する", "evidence":"" } ] }
-          ] }
+          ] },
+        { "id":"H", "kind":"state",
+          "theme":"12コマ教材・アプリ・実証・運用ガイドなど全成果物の状況が、いつでも一覧で確認できる",
+          "meaning":"マスターが個々のノードを開かずに全体進捗を把握できる状態",
+          "detail":"1事実：roadmap.htmlにA〜F配下の全state葉ノードのID・テーマ・完了(done)状況をnodesツリーから機械的に集計して一覧表示する「進捗」シートが常設されている（手動集計ではなく都度自動導出のため二重管理にならない）。マスターより『進捗の全体像が見えない』との指摘を受けて追加",
+          "criteria":[ { "text":"roadmap.htmlに、A〜F配下の全state葉ノード（criteriaを持つ葉）のID・テーマ・完了状況を機械集計して一覧表示する「進捗」タブが存在する", "verify":"roadmap.htmlをブラウザで開き「進捗」タブを選択し、branch(A〜F)ごとの完了数/全体数と、未完了の葉ノードのID・テーマが一覧表示されることを確認する", "evidence":"https://github.com/rahiseko-alt/test/commit/c9053d53b1164d8c0ceb2421703f777e49aa0cbb" } ] }
       ] }
   ]
 }
@@ -489,6 +494,7 @@
 
   <div class="tabs">
     <button data-sheet="fig" class="active">図</button>
+    <button data-sheet="progress">進捗</button>
     <button data-sheet="readme">README</button>
   </div>
 
@@ -498,6 +504,16 @@
       <button data-act="close">閉じる</button>
     </div>
     <div id="tree"></div>
+  </div>
+
+  <div class="sheet" id="sheet-progress">
+    <div class="doc" id="progress">
+      <h2>全成果物の進捗（機械集計・nodesから都度導出。手動更新不要）</h2>
+      <p>A〜F配下の全state葉ノード（<code>criteria</code>を持つ葉＝独立して受入判定される成果物）を、
+      毎回この画面表示のたびに <code>nodes</code> ツリーから数え直して表示する。<b>ここに入力欄は無い</b>
+      ＝ <code>docs/roadmap.html</code> の JSON 以外に進捗データを別途持たない（二重管理禁止）。</p>
+      <div id="progress-body"></div>
+    </div>
   </div>
 
   <div class="sheet" id="sheet-readme">
@@ -757,6 +773,70 @@
 
   var tree = document.getElementById('tree');
   DATA.nodes.forEach(function(n){ tree.appendChild(render(n, 0)); });
+
+  // --- 進捗タブ：全成果物(state葉=criteriaを持つ葉)をnodesから都度集計する（手動入力なし） ---
+  function collectLeaves(node, out){
+    var kids = node.children && node.children.length;
+    if(!kids){
+      if(kindOf(node) === 'state' && node.criteria && node.criteria.length) out.push(node);
+      return;
+    }
+    node.children.forEach(function(c){ collectLeaves(c, out); });
+  }
+
+  function renderProgress(){
+    var body = document.getElementById('progress-body');
+    if(!body) return;
+    body.innerHTML = '';
+    var goal = DATA.nodes[0];
+    var branches = (goal && goal.children) || [];
+    var grandDone = 0, grandTotal = 0;
+
+    var table = document.createElement('table');
+    var thead = document.createElement('tr');
+    ['branch','テーマ','完了/全体','未完了の成果物'].forEach(function(h){
+      var th = document.createElement('th'); th.textContent = h; thead.appendChild(th);
+    });
+    table.appendChild(thead);
+
+    branches.forEach(function(branch){
+      var leaves = [];
+      collectLeaves(branch, leaves);
+      var done = leaves.filter(function(l){ return statusOf(l) === 'done'; }).length;
+      grandDone += done; grandTotal += leaves.length;
+
+      var tr = document.createElement('tr');
+      var tdId = document.createElement('td'); tdId.textContent = branch.id; tr.appendChild(tdId);
+      var tdTh = document.createElement('td'); tdTh.textContent = branch.theme || ''; tr.appendChild(tdTh);
+      var tdN = document.createElement('td'); tdN.textContent = done + ' / ' + leaves.length; tr.appendChild(tdN);
+      var tdRest = document.createElement('td');
+      var pending = leaves.filter(function(l){ return statusOf(l) !== 'done'; });
+      if(pending.length === 0){
+        tdRest.textContent = '（完了）';
+      } else {
+        var ul = document.createElement('ul'); ul.style.margin = '0'; ul.style.paddingLeft = '16px';
+        pending.forEach(function(l){
+          var li = document.createElement('li');
+          li.textContent = l.id + '：' + (l.theme || '');
+          ul.appendChild(li);
+        });
+        tdRest.appendChild(ul);
+      }
+      tr.appendChild(tdRest);
+      table.appendChild(tr);
+    });
+
+    var wrap = document.createElement('div'); wrap.className = 'tblwrap';
+    wrap.appendChild(table);
+    body.appendChild(wrap);
+
+    var total = document.createElement('p');
+    total.appendChild(document.createTextNode('全体：'));
+    var strong = document.createElement('b'); strong.textContent = grandDone + ' / ' + grandTotal + ' 件完了';
+    total.appendChild(strong);
+    body.insertBefore(total, wrap);
+  }
+  renderProgress();
 
   // tabs
   document.querySelectorAll('.tabs button').forEach(function (b) {
