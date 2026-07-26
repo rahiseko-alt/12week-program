@@ -121,7 +121,7 @@
     "next": "【C枝・codex担当】C-1a（コマ1が、リモートの通しリハーサルでその回の到達点を満たして成立する）を進める。docs/curriculum/session-01-remote-roadmap.md に作ったスライド構成＋90分進行台本を使って、リモート通しリハを実施し、公開URL/録画リンクを evidence にする。C-1a が成立したら C-1b（90分以内に顧客の原子ロードマップが実際に確定する）へ進む。【D2枝・Claude Code担当】CodeRabbit指摘の修正を積んだ最新のフォローアップPRのCIとマージ、対応する本番デプロイの完了を確認する。完了後、docs/demo/D2-remote-walkthrough.md の進行台本どおりに本番URL（https://cc-v2-web.vercel.app/estimate）でリモート画面共有デモを実施し、録画リンク/実施記録を D2 の evidence に書き込む。成立したら D3（公開URL到達確認：/estimate が200＋期待マーカーを返すことをGETで確認）へ。両枝は並行進行のため、docs/roadmap.html 更新時は互いの直近コミットを取り込んでから編集し衝突を避けること。",
     "handoff": {
       "done": "D2（工数・コスト概算UI）とデモ台本 docs/demo/D2-remote-walkthrough.md を実装・整備し、CodeRabbit指摘（type=numberのサニタイズ問題等）を修正してフォローアップPRとして送付。経緯の詳細は docs/failures.md（2026-07-25）を参照。",
-      "trouble": "本セッションはnpmレジストリへ到達できずローカルでtypecheck/lint/test/build/auditを実行できず、CI（GitHub Actions側）での確認がまだ済んでいない。また auto-merge のタイミングでレビュー対応コミットがmainから漏れる事象が3回連続で発生し、その都度ブランチを作り直して新PRで再送する対応を要した。いずれも詳細は docs/failures.md を参照。"
+      "trouble": "本セッションはnpmレジストリへ到達できずローカルでtypecheck/lint/test/build/auditを実行できず、CI（GitHub Actions側）での確認がまだ済んでいない。また auto-merge のタイミングでレビュー対応コミットがmainから漏れる事象が4回連続で発生し、その都度ブランチを作り直して新PRで再送する対応を要した。直近では roadmap.html 更新を1回失念し roadmap-required で赤化（このPR内で是正）。いずれも詳細は docs/failures.md を参照。"
     },
     "updated": "2026-07-25"
   },
