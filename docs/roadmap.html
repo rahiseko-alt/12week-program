@@ -117,10 +117,10 @@
 {
   "meta": {
     "title": "中小企業 課題解決サポート教材（12コマ伴走プログラム）を完成させる",
-    "active": "C-1a-1",
-    "next": "C-1a-1に着手（コマ1教材の完成・公開）。成立後はdeps順に C-1a-2 → C-1b へ、並行して D2 → D3 へ進む。C-1完了後は C-2〜C-12 をdeps順に着手。両枝並行のため、roadmap更新時は直近コミットを取り込んでから編集する。各ノードの受入条件・確認手順は該当ノードの criteria を参照。",
+    "active": "C-1a-2",
+    "next": "C-1a-2に着手（コマ1教材のリモート通しリハーサルを実施し、成立の記録＝公開URL/録画リンクをevidenceにする）。成立後は C-1b へ。並行して D2 → D3 へ進む。C-1完了後は C-2〜C-12 をdeps順に着手。両枝並行のため、roadmap更新時は直近コミットを取り込んでから編集する。各ノードの受入条件・確認手順は該当ノードの criteria を参照。",
     "handoff": {
-      "done": "PR#19マージ後にCodeRabbitから届いた指摘のうち2件に対応：①B2-change-and-dependency-rules.mdの具体例Cへ、新期限の合意が不能な場合のエスカレーション手順を追加。②meta.handoff/meta.nextが各ノードのcriteria/evidenceと重複記述していたのを簡潔なポインタへ整理（本エントリ自体も対象）。3件目の指摘（criteria/verify書き換え）は実際のdiffと不一致（変更したのはdetail/evidenceのみ）と判断し対応不要（経緯はdocs/failures.md参照）。",
+      "done": "C-1a-1（コマ1教材の完成・公開）に着手。independent-verifierによる初回検証で、台本の70-82分・45-70分区間が薄くスライド参照も無いとして不合格判定を受け、3点（発話例・確認事項の追加、顧客対応の会話例とよくある誤りの言い換え例の追加、スライド番号の明示参照）を修正。再検証でPASS。修正コミットのblob permalinkをevidenceに記入し、meta.activeをC-1a-2へ進めた。",
       "trouble": "無し。"
     },
     "updated": "2026-07-26"
@@ -291,8 +291,8 @@
                     { "id":"C-1a-1", "kind":"state",
                       "theme":"コマ1の教材（スライド一式＋90分進行台本）が完成し公開されている",
                       "meaning":"リハーサル前の準備完了",
-                      "detail":"1事実：教材一式が完成・公開されている",
-                      "criteria":[ { "text":"コマ1のスライド一式と90分進行台本が、到達点をカバーする形で完成し公開されている", "verify":"docs/curriculum/session-01-remote-roadmap.md がスライド構成・進行台本として到達点を満たす内容で存在することを確認する", "evidence":"" } ] },
+                      "detail":"独立検証で1回不合格（70-82分・45-70分の台本が薄い／スライド参照が無い）→3点を修正し再検証でPASS",
+                      "criteria":[ { "text":"コマ1のスライド一式と90分進行台本が、到達点をカバーする形で完成し公開されている", "verify":"docs/curriculum/session-01-remote-roadmap.md がスライド構成・進行台本として到達点を満たす内容で存在することを確認する", "evidence":"https://github.com/rahiseko-alt/test/blob/7c764e38f34af1d4a0c07e28aa4960be1b58f27f/docs/curriculum/session-01-remote-roadmap.md" } ] },
                     { "id":"C-1a-2", "kind":"state",
                       "theme":"完成した教材が、実際のリモート通しリハーサルでその回の到達点を満たして成立する",
                       "meaning":"本番同様の条件での成立確認",
