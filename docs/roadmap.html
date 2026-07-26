@@ -118,10 +118,10 @@
   "meta": {
     "title": "中小企業 課題解決サポート教材（12コマ伴走プログラム）を完成させる",
     "active": "C-1a-1",
-    "next": "【最優先・未実施】オープン中のPR#17（CodeRabbit追加指摘対応。CIは全チェック緑）をレビュー/マージする。マージ後、本番デプロイの反映を確認し、docs/demo/D2-remote-walkthrough.md の台本どおりに本番URL（https://cc-v2-web.vercel.app/estimate）でリモート画面共有デモを実施し、録画リンク/実施記録を D2 の evidence に書き込む。成立したら D3（公開URL到達確認：/estimate が200＋期待マーカーを返すことをGETで確認）へ。並行して C-1a-1（コマ1の教材一式が到達点をカバーする形で完成・公開されている）を進める。docs/curriculum/session-01-remote-roadmap.md のスライド構成＋90分進行台本を到達点に照らして完成させ、公開する。C-1a-1が成立したら C-1a-2（それを実際にリモート通しリハで成立させる）へ進み、公開URL/録画リンクをevidenceにする。C-1aが成立したら C-1b（90分以内に顧客の原子ロードマップが実際に確定する）へ進む。C-2〜C-12は今回B1のコマ別設計表から各コマの到達点を転記済みのため、C-1完了後は着手順にdepsを辿って進める。両枝は並行進行のため、docs/roadmap.html 更新時は互いの直近コミットを取り込んでから編集し衝突を避けること。",
+    "next": "【最優先・未実施】オープン中のPR#17（CodeRabbit追加指摘対応。CIは全チェック緑）をレビュー/マージする。マージ後、本番デプロイの反映を確認し、docs/demo/D2-remote-walkthrough.md の台本どおりに本番URL（https://cc-v2-web.vercel.app/estimate）でリモート画面共有デモを実施し、録画リンク/実施記録を D2 の evidence に書き込む。成立したら D3（公開URL到達確認：/estimate が200＋期待マーカーを返すことをGETで確認）へ。並行して C-1a-1（コマ1の教材一式が到達点をカバーする形で完成・公開されている）を進める。docs/curriculum/session-01-remote-roadmap.md のスライド構成＋90分進行台本を到達点に照らして完成させ、公開する。C-1a-1が成立したら C-1a-2（それを実際にリモート通しリハで成立させる）へ進み、公開URL/録画リンクをevidenceにする。C-1aが成立したら C-1b（90分以内に顧客の原子ロードマップが実際に確定する）へ進む。C-2〜C-12は今回B1のコマ別設計表から各コマの到達点を転記済みのため、C-1完了後は着手順にdepsを辿って進める。両枝は並行進行のため、docs/roadmap.html 更新時は互いの直近コミットを取り込んでから編集し衝突を避けること。【副次・手隙のときに】independent-verifierが不合格とした3葉を復旧する：A2-6-b/A2-6-cはdocs/research/A2-06-structured-problem-solving.mdに80/20・確証バイアス個別の出典を追加、B2-aはdocs/design/B2-change-and-dependency-rules.mdの『5. 要件変更時の再計画手順』に依存版の具体例（B2-b/cの具体例A/Bと同水準）を追加。修正後は必ずindependent-verifierで再検証してからevidenceを埋める（本人採点で戻さない）。",
     "handoff": {
-      "done": "マスターから「42ノードは原子か」と再度問われ、全27葉（前回未監査の21葉含む）を3視点（列挙語スキャン／独立失敗シナリオ／evidence実測）のbasis-reviewerで並行監査。3体の判定は割れたため、マスターの指示どおり多数決でなく docs/roadmap.html README『分解の規則』＋AGENTS.md決定的判定に自分で直接当てはめて最終判定。結果、C-2to12（B1が既にdoneのため遅延展開の前提を満たしており今分解）→C-2〜C-12の11葉、E1→E1-a/b、F1→F1-a/b/c、C-1a→C-1a-1/C-1a-2（教材完成／通しリハ成立）を分割。D1-aは検証中に自分自身の前回分割ミス（無関係なconeRange()のテストを混入）を発見しD1-c（Cone of Uncertainty）として独立させ修正。一方A3-a・B1・C-1b・D2は「同一成果物を作る一体的な手段」と判定し分割しなかった（判断理由はdocs/failures.md参照）。ノード数は42→61（葉27→42）。ローカルでtypecheck/lint/test/build/audit/roadmap-evidence-verify全て緑を確認済み。詳細はdocs/failures.md（2026-07-26 2件目）参照。",
-      "trouble": "無し。今回もnpmレジストリに到達でき、ローカルチェックを最後まで完走できた。PR#17（CodeRabbitフォローアップ、CI全緑）はまだマージ未実施のまま残っている。C-1aが分割されたため meta.active を C-1a から C-1a-1 へ変更した。"
+      "done": "①「42ノードは原子か」との問いに、全27葉を3視点basis-reviewerで並行監査→多数決でなくREADME分解規則+AGENTS.md決定的判定に自分で当てはめ、C-2to12→C-2〜C-12、E1→E1-a/b、F1→F1-a/b/c、C-1a→C-1a-1/C-1a-2に分割（61ノード）。②さらに「分解後のdone判定は機械検証か」との問いを受け、分割時にevidenceを付け替えて自分でdoneと判定していた14葉が実は本人採点（AGENTS.md違反）だったと判明。5体のindependent-verifierで敵対的に再検証させた結果、14葉中11葉は合格したが3葉（A2-6-b・A2-6-c・B2-a）は不合格と判明し、evidenceを空へ戻して未解決に復帰させた（詳細理由はcriteria.detailとdocs/failures.mdに記載）。ローカルでtypecheck/lint/test/build/audit/roadmap-evidence-verify全て緑。詳細はdocs/failures.md（2026-07-26 2・3件目）参照。",
+      "trouble": "無し。PR#17（CodeRabbitフォローアップ、CI全緑）はまだマージ未実施のまま残っている。解決済み葉が15→12（A2-6-b/A2-6-c/B2-aが不合格で未解決へ復帰）に減った。A2-6-b/A2-6-cは出典（80/20・確証バイアス）の追加、B2-aは依存版の具体例追加が必要。"
     },
     "updated": "2026-07-26"
   },
@@ -161,13 +161,13 @@
                     { "id":"A2-6-b", "kind":"state",
                       "theme":"構造的問題解決で使う『具体的な道具（イシューツリー・仮説ツリー・ピラミッド等）』が、根拠つきで分かっている",
                       "meaning":"イシューツリー化の実務手順",
-                      "detail":"1事実：道具が文書化されている",
-                      "criteria":[ { "text":"領域⑥の道具（イシューツリー・仮説ツリー・ピラミッド・80/20等）が文書化されている", "verify":"docs/research/A2-06-structured-problem-solving.md の『道具（どう使うか）』節と末尾『出典』節を確認する", "evidence":"https://github.com/rahiseko-alt/test/blob/main/docs/research/A2-06-structured-problem-solving.md" } ] },
+                      "detail":"independent-verifierが不合格判定：道具節の『80/20・So-what』に対応する出典が無く、4リンクとも他3項目（MECE/ピラミッド/イシューツリー/仮説ツリー）の解説記事の使い回しだった。80/20の出典追加まで未解決",
+                      "criteria":[ { "text":"領域⑥の道具（イシューツリー・仮説ツリー・ピラミッド・80/20等）が文書化されている", "verify":"docs/research/A2-06-structured-problem-solving.md の『道具（どう使うか）』節と末尾『出典』節を確認する（80/20・So-what分析についても個別に出典があること）", "evidence":"" } ] },
                     { "id":"A2-6-c", "kind":"state",
                       "theme":"構造的問題解決の『よくある落とし穴（MECE崩れ・確証バイアス等）』が、根拠つきで分かっている",
                       "meaning":"イシューツリー化の失敗回避",
-                      "detail":"1事実：落とし穴が文書化されている",
-                      "criteria":[ { "text":"領域⑥の典型的な落とし穴（MECE崩れ・海を沸かす・確証バイアス・粒度不揃い）が文書化されている", "verify":"docs/research/A2-06-structured-problem-solving.md の『落とし穴（避けること）』節と末尾『出典』節を確認する", "evidence":"https://github.com/rahiseko-alt/test/blob/main/docs/research/A2-06-structured-problem-solving.md" } ] }
+                      "detail":"independent-verifierが不合格判定：落とし穴節の『確証バイアス』に対応する出典が無く、4リンクとも他項目の解説記事の使い回しだった。確証バイアスの出典追加まで未解決",
+                      "criteria":[ { "text":"領域⑥の典型的な落とし穴（MECE崩れ・海を沸かす・確証バイアス・粒度不揃い）が文書化されている", "verify":"docs/research/A2-06-structured-problem-solving.md の『落とし穴（避けること）』節と末尾『出典』節を確認する（確証バイアスについても個別に出典があること）", "evidence":"" } ] }
                   ] },
                 { "id":"A2-5", "kind":"state",
                   "theme":"システム思考・SSM（問題構造化）の原則・道具・落とし穴が取り出せている",
@@ -252,8 +252,8 @@
                 { "id":"B2-a", "kind":"state",
                   "theme":"よそのチーム・次回セッションへの引き継ぎが、破綻せず回るルールになっている",
                   "meaning":"セッション→別チーム開発→次セッションの依存の型",
-                  "detail":"1事実：依存の運用ルールが定義されている",
-                  "criteria":[ { "text":"セッション→別チーム開発→次セッションの依存が、破綻なく回る運用ルールとして定義されている", "verify":"docs/design/B2-change-and-dependency-rules.md の『1. 依存の型』節に、発注・受領の具体的手順があることを確認する", "evidence":"https://github.com/rahiseko-alt/test/blob/main/docs/design/B2-change-and-dependency-rules.md" } ] },
+                  "detail":"independent-verifierが不合格判定：§1は抽象手順の箇条書きに留まり、未達時に委ねる§5には依存版の具体例（B2-b/cの具体例A/Bに相当するもの）が無く参照が空振り。依存版の具体例（例：発注→受領がズレる/揉めるケースの実演）を§5に追加するまで未解決",
+                  "criteria":[ { "text":"セッション→別チーム開発→次セッションの依存が、破綻なく回る運用ルールとして具体例つきで定義されている", "verify":"docs/design/B2-change-and-dependency-rules.md の『1. 依存の型』節に発注・受領の具体的手順があり、かつ『5. 要件変更時の再計画手順』に依存版の具体例（B2-b/cの具体例A/Bと同水準の実演）があることを確認する", "evidence":"" } ] },
                 { "id":"B2-b", "kind":"state",
                   "theme":"案件の途中で頼まれごと（付け足し）が増えても、破綻せず回るルールになっている",
                   "meaning":"スコープ追加＝親ゲート再オープンの型",
