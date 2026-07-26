@@ -13,12 +13,13 @@
 - **イシューツリー**：頂点の問い→MECE な枝→さらに枝→検証可能な末端。**本教材の"原子ロードマップ（1葉=1事実）"はこのツリーの規律そのもの**。
 - **仮説ツリー（hypothesis tree）**：中心仮説を軸に、検証すべき分岐を優先度づけして配置。
 - **ピラミッド（Minto）**：結論→根拠→証拠。顧客への提案・合意形成の伝達様式。
-- **80/20・So-what**：効く枝から検証し、各分析から「だから何が言えるか」を必ず引き出す。
+- **80/20（パレートの法則）**：「20%の原因が80%の結果を生む」という不均衡を前提に、効く枝（＝影響の大きい20%）から優先して検証する（出典：Management Consulted）。
+- **So-what分析**：観察・分析した事実から「だから何が言えるか＝相手が動くべき示唆は何か」を必ず引き出す技法（出典：Slideworks）。
 
 ## 落とし穴（避けること）
 - **MECE でない**：カテゴリが重なり二重計上、または抜けが出る。→ 分けたら必ず"重複ゼロ・抜けゼロ"を点検。
 - **"海を沸かす（boil the ocean）"**：情報を先に全部集めてから意味を考える＝ムダと混乱。Minto の指摘どおり、仮説を先に置いて検証に集中する。
-- **確証バイアス**：仮説を"当てにいく"。Yes/No が明確に出る検証を設計し、反証に開く。
+- **確証バイアス**：仮説を"当てにいく"＝自分の仮説を支持する情報ばかりを探し、反する情報を軽視・無視してしまう認知バイアス（出典：Simply Psychology）。Yes/No が明確に出る検証を設計し、反証に開く。
 - **枝の粒度不揃い**：末端が「独立して検証できる1事実」まで割れていないと打ち手にならない（＝本教材の原子性ルールと同じ停止条件）。
 
 ## 教材への落とし込み（どの枝を支えるか）
@@ -31,5 +32,8 @@
 - [The Pyramid Principle: Logic in Problem Solving（StrategyU, Minto 要約）](https://strategyu.co/pyramid-principle-3/)
 - [Issue Tree in Consulting: A Complete Guide（MConsultingPrep）](https://mconsultingprep.com/issue-tree)
 - [Consulting Hypothesis Tree（My Consulting Offer, Minto 4手順）](https://www.myconsultingoffer.org/case-study-interview-prep/hypothesis-tree/)
+- [80/20 Rule (Pareto Principle) Explained（Management Consulted）](https://managementconsulted.com/80-20-rule-pareto-principle-explained/)
+- [Getting to the "So What": A Guide to Creating Actionable Business Insights（Slideworks）](https://slideworks.io/resources/getting-to-so-what-guide-to-creating-actionable-business-insights)
+- [Confirmation Bias In Psychology: Definition & Examples（Simply Psychology）](https://www.simplypsychology.org/confirmation-bias.html)
 
 > 一次情報への格上げ候補（A3統合時）：Barbara Minto『The Minto Pyramid Principle』原著。
