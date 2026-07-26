@@ -1,6 +1,6 @@
 ---
 name: checkin-checkout
-description: セッションの引継ぎ（handoff）を読み書きする簡易チェックイン/チェックアウト。ロードマップ（docs/roadmap.html）を読む・書くセッションで発動する。handoff は docs/roadmap.html の meta.handoff に一体化（①今回実施 ②今回トラブル ③次回=meta.next）。チェックイン=meta.handoff と meta.active/next を読み、それを踏まえて「今回やること」をユーザーに提示する。チェックアウト=ロードマップJSONを更新する瞬間に meta.handoff を上書きし、失敗は docs/failures.md に追記して commit & push する。
+description: セッションの引継ぎ（handoff）を読み書きする簡易チェックイン/チェックアウト。ロードマップ（docs/roadmap.html）を読む・書くセッションで発動する。handoff は docs/roadmap.html の meta.handoff に一体化（①今回実施 ②今回トラブル ③次回=meta.next）。チェックイン=meta.handoff と meta.active/next を読み、それを踏まえて「今回やること」をユーザーに提示する。チェックアウト=ロードマップJSONを更新する瞬間に meta.handoff を上書きし、失敗は docs/failures.md に追記して commit & push し、CIが緑になったところまで確認してPRのマージまで完了させる。
 ---
 
 # チェックイン / チェックアウト（簡易引継ぎ）
@@ -50,3 +50,17 @@ handoff は独立ファイルではなく **`docs/roadmap.html` の `meta.handof
 2. **失敗があれば `docs/failures.md` に1件 append**（日付＋事象＋根因＋教訓）。ここは消さない。
 3. `docs/roadmap.html`（＋あれば `docs/failures.md`）を保存し、**commit & push** する。
    - 全PRは `roadmap-required` により roadmap 差分が必須。②③は毎回書けるので diff 0 はあり得ない（例外なし）。
+4. **PRを出す／既存PRへの反映を確認する**。このブランチに対応するPRが無ければ新規作成する（テンプレがあれば従う）。
+   既にPRがある場合は、今回のpushがそのPRに乗ったことを確認する。
+5. **CIの完走を確認し、緑ならマージまで実行する**。AGENTS.md の運用（「変更はPRを出せば誰でもレビュー/承認して
+   マージしてよい。守るのはCIが緑なことだけ」）に従い、チェックアウトは**マージ完了まで**を完了条件とする。
+   - 必須チェック（`ci-green` / `roadmap-required` 等）が全て緑になるまで確認する。CIが赤・実行中のままでは
+     マージしない。マージ操作は GitHub のマージ機能（native auto-merge の有効化、または直接マージ）で行う。
+   - **例外＝マージしない／保留する場合**は、その理由をチェックアウト報告に明記する（例：CIが赤、必須チェックが
+     未完走、マージ済みブランチへの追いpushでレビュー対応が積み残っている等）。理由なく「未マージのまま」で
+     チェックアウトを終えない。
+   - **既知の注意点**（`docs/failures.md` 2026-07-25参照）：CodeRabbitのレビューはCIより遅れて届くことがあり、
+     CI緑での即マージ後にレビュー指摘が届く場合がある。指摘が来たら、マージ済みブランチへの追いpushは避け、
+     `main` から枝を作り直して新PRとして出し直す。
+6. マージ後、次回チェックインが最新 `main` から始まるよう、後続作業が必要な場合は改めて `main` から
+   ブランチを作り直す（マージ済みブランチへの追いpushはしない）。
