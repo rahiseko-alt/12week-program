@@ -1,6 +1,6 @@
 name: prod-smoke
 
-# 本番到達の外部事実チェック（G-2-2）。
+# 本番到達の外部事実チェック（G-2-2 / D3）。
 # 実行環境(サンドボックス)は *.vercel.app への外向きが遮断されるため、
 # プロキシ外の実機である GitHub Actions に本番URLを curl させて機械判定する。
 # この run が緑＝「公開URLが 200 かつ本文に 'cc-v2 monorepo'」の evidence。
@@ -43,6 +43,23 @@ jobs:
             exit 1
           fi
           echo "HSTS OK: Strict-Transport-Security を確認"
+
+      - name: 概算アプリ /estimate が 200 かつ '工数・コスト概算アプリ' — D3
+        run: |
+          # D（工数・コスト概算アプリ）が公開URLで誰でも開けること。
+          # マーカーは /estimate の h1（apps/web/app/estimate/page.tsx）。
+          echo "Checking ${PROD_URL}/estimate"
+          code=$(curl -sS -o estimate.html -w '%{http_code}' --max-time 30 "${PROD_URL}/estimate")
+          echo "HTTP(/estimate)=${code}"
+          if [ "${code}" != "200" ]; then
+            echo "FAIL: 期待 200 に対し ${code}"
+            exit 1
+          fi
+          if ! grep -q '工数・コスト概算アプリ' estimate.html; then
+            echo "FAIL: 本文にマーカー '工数・コスト概算アプリ' が無い"
+            exit 1
+          fi
+          echo "ESTIMATE OK: 200 かつ '工数・コスト概算アプリ' を ${PROD_URL}/estimate で確認"
 
       - name: ヘルスチェック /api/health が 200 — G-4-1 裏打ち
         run: |
