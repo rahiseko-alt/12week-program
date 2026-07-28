@@ -9,30 +9,6 @@
 - より深いディレクトリに `AGENTS.md` がある場合、そのディレクトリ配下では **近い方が優先**。
   書いていない項目だけ、このルートを継承する。
 
-## このリポジトリの位置づけ：テンプレ専用（運用フロー）
-
-**このリポジトリ自体はテンプレ（雛形）であり、ここで直接アプリを作らない。** 各案件は「このリポジトリを
-コピーして始める」。コピー直後の状態は次のように仕込んである。
-
-- **引継ぎ（handoff）はテンプレ**：`docs/roadmap.html` の `meta.handoff` に、コピー先が最初に辿る
-  **初回接続トップ手順ナビ（`meta.handoff.nav`）** が書いてある。上部バナー「初回ナビ」にも番号付きで出る。
-- **ツリー図は白紙**：`nodes` は `ROOT` プレースホルダ1個だけ。`meta.template:true` が立っている。
-
-**運用フロー（この順で固定）**：
-1. このリポジトリを**コピー**する。
-2. コピーを**開く**。
-3. **チェックイン**（`checkin-checkout` スキル）で `meta.handoff` と `meta.active`/`meta.next` を読む
-   → 白紙テンプレなので `meta.handoff.nav` が示す手順が「今回やること」になる。
-4. **nav を上から辿る**（機械強制の有効化＝手順0 → ヒアリング/リサーチ/提案/承認 → 設定 → 原子ツリー作成）。
-5. nav の通り、下記「案件の絶対起点」に従って `docs/roadmap.html` を**原子ツリーへ描き直す**（`ROOT` は破棄）。
-6. 描き直したら **`meta.template` を false（または削除）** にし、handoff を実セッションの内容へ上書きする。
-   → この瞬間、`scripts/verify-roadmap-evidence.mjs`（CI）が**本物の原子ツリー**（分解済み・criteria を持つ葉）を
-   機械強制する状態に自動で戻る。以降は通常運用（handoff 上書き＋`docs/failures.md` 追記）へ。
-
-- **機械の保証**：`meta.template:true` の間だけ、機械は白紙ツリーを許容する代わりに `meta.handoff.nav` の存在を
-  必須にする。テンプレのまま実装を進める（＝ツリー未作成のまま template を放置する）ことは、template を false に
-  した瞬間に CI が赤くなるため構造的にできない。
-
 ## 案件の絶対起点：まず原子ツリー（例外なし・AI 裁量ゼロ）
 
 **このリポジトリで案件を始めるとき、最初に必ず作る成果物は `docs/roadmap.html` の原子分解ツリーである。**
@@ -47,8 +23,6 @@
 - **形式は `docs/roadmap.html` の JSON のみ（正）**：Markdown のチェックリストや散文のロードマップで
   代替することを**禁止**する。正は `<script id="roadmap-data">` の JSON。機械（`roadmap-required` /
   `verify-roadmap-evidence.mjs`）が形式・更新・evidence を審判する。
-- **cc-v2 をコピーして新案件を始めた場合**：同梱の `docs/roadmap.html` は**テンプレの残骸**なので、
-  新案件のゴールから**原子ツリーを描き直す**のが第一コミット。既存ノードの流用ではなく作り直しが原則。
 - **原子性・書式の正**：どこまで割るか（1葉＝1事実＝1verify）と `criteria`/`verify`/`evidence` の書式は、
   下の「検証の規律」節と `docs/roadmap.html` の README シートが正。ここでは「必ず最初に作る」ことだけを固定する。
 
@@ -185,8 +159,8 @@ node scripts/verify-roadmap-evidence.mjs  # roadmap の evidence が外部事実
    - **手順0-d：Secret Protection / Push protection を有効化する** — Settings → **Security → Code security**
      （旧 Security and analysis）→「Secret Protection」「Push protection」をそれぞれ **Enable**（Public repo なら無料）。
      未有効だと、誤って API キー等をコミットしても検知・ブロックされない（実地で確認済み＝ボタンが「Enable」表示なら未有効）。
-     依存の自動更新（Dependabot version updates）は、この cc-v2 テンプレに `.github/dependabot.yml` が同梱済みなので
-     コピー後に追加設定は不要（PR を1本出せば自動的に動き出す）。
+     依存の自動更新（Dependabot version updates）は `.github/dependabot.yml` が同梱済みのため追加設定は不要
+     （PR を1本出せば自動的に動き出す）。
    - **手順0-c：`roadmap-required` は最初は一覧に出ない**（PR 時のみ動くチェックのため、PR が1本も無い新規
      repo では未記録＝実地で確認済み）。**最初の PR が1回動いた後**、同じ画面で `roadmap-required` を追加する。
      `ci-green` だけでも型/Lint/テスト/ビルド/ツリー検査(evidence)/起動確認を束ねた本丸は効く。
@@ -202,7 +176,7 @@ node scripts/verify-roadmap-evidence.mjs  # roadmap の evidence が外部事実
 5. **設定** — 承認された構成を、その案件の `AGENTS.md`（`presets/_TEMPLATE.md` を複製）に
    記載し、必要な雛形を作る。
 6. **原子ツリーを作る（必須・第一成果物）** — 案件のゴールを頂点に、`docs/roadmap.html` の JSON を
-   **原子レベルまで分解したツリー**として描き直す（コピー元の残骸ノードは破棄）。各葉に `criteria`/`verify`
+   **原子レベルまで分解したツリー**として描き直す。各葉に `criteria`/`verify`
    を置き、`meta.active`/`meta.next`/`meta.handoff` を初期化する。**実装作業の実行はこのツリー確定後**。
    ※ 純粋な調査・マニュアル作成など「スタック不問」の案件は 1〜5 を最小化してよいが、6 は省けない。
 
