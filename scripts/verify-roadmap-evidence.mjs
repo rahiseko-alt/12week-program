@@ -10,6 +10,13 @@
 //   - 任意の URL           : http(s)://...（公開URL・run URL・alert URL 等）
 //   - デプロイID           : dpl_<英数字>（Vercel）
 // スクショ・「レビューした」等の自己申告は不許可（＝これらは非空でも弾く）。
+//
+// あわせて原子性（AGENTS.md「検証の規律」＝1葉=1事実=1verify）を機械強制する:
+//   - 子を持つ状態ノードに criteria を付けてはいけない（受入条件は葉にのみ許可）
+//   - 子を持たない状態ノードは criteria をちょうど1件持たなければならない
+//     （0件＝分解未完了／2件以上＝原子性違反＝独立した葉へ分割すること）
+//   - 作業ノード(work)に criteria を付けてはいけない（status/commit/done_at で管理）
+// これはAIの裁量やレビュー時の見落としに委ねず、どこまで割るかの基準をCIで機械的に閉じる。
 
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
@@ -56,10 +63,35 @@ function main() {
       if (node.id) ids.add(node.id);
       if (node.id && Array.isArray(node.deps)) depsMap.set(node.id, node.deps);
       const hasChildren = Array.isArray(node.children) && node.children.length > 0;
+      const critCount = Array.isArray(node.criteria) ? node.criteria.length : 0;
       if (hasChildren) decomposed++;
-      if (!hasChildren && Array.isArray(node.criteria) && node.criteria.length > 0) {
+      if (!hasChildren && critCount > 0) {
         leavesWithCriteria++;
       }
+
+      // 原子性の機械強制（AGENTS.md「検証の規律」＝1葉=1事実=1verify）。
+      // これまでAI裁量に委ねられ「無視されることが多い」と指摘されたため、CIで強制する。
+      if (hasChildren && critCount > 0) {
+        violations.push(
+          `${node.id}: 子を持つ状態ノードに criteria が付いています（受入条件は葉にのみ許可。分解済みなら判定は子に委譲すること）`,
+        );
+      }
+      if (!hasChildren && node.kind === "state" && critCount === 0) {
+        violations.push(
+          `${node.id}: 子を持たない状態ノードなのに criteria がありません（原子まで割って verify を置くこと。まだ分解途中なら children を追加すること）`,
+        );
+      }
+      if (!hasChildren && node.kind === "state" && critCount > 1) {
+        violations.push(
+          `${node.id}: 1葉の criteria に${critCount}件の受入条件が同居しています（原子性違反＝「独立して落ちうる受入事実」が2つ以上）。各事実を独立した子の葉に分割すること`,
+        );
+      }
+      if (node.kind === "work" && critCount > 0) {
+        violations.push(
+          `${node.id}: 作業ノード(work)に criteria が付いています（criteria は状態ノード(state)専用。作業は status/commit/done_at で管理すること）`,
+        );
+      }
+
       for (const c of node.criteria || []) {
         const ev = (c.evidence ?? "").trim();
         if (ev === "") continue; // 未充足は対象外（☐ のまま）
