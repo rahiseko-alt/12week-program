@@ -17,6 +17,8 @@
 //     （0件＝分解未完了／2件以上＝原子性違反＝独立した葉へ分割すること）
 //   - 作業ノード(work)に criteria を付けてはいけない（status/commit/done_at で管理）
 // これはAIの裁量やレビュー時の見落としに委ねず、どこまで割るかの基準をCIで機械的に閉じる。
+// 例外：meta.template:true（白紙テンプレ・コピー直後）は、criteria 0件の ROOT プレースホルダを
+//   意図的に許容する（下の nodes 空チェック／nav 必須チェックが代わりに効く）。
 
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
@@ -55,6 +57,9 @@ function main() {
   const violations = [];
   const depsMap = new Map(); // id -> [依存先id...]（道順/依存。時系列は背骨でなくここで表す）
 
+  const meta = data.meta || {};
+  const isTemplate = meta.template === true;
+
   let decomposed = 0; // 子を持つ（分解された）ノード数
   let leavesWithCriteria = 0; // 受入条件を持つ葉状態の数
 
@@ -76,7 +81,7 @@ function main() {
           `${node.id}: 子を持つ状態ノードに criteria が付いています（受入条件は葉にのみ許可。分解済みなら判定は子に委譲すること）`,
         );
       }
-      if (!hasChildren && node.kind === "state" && critCount === 0) {
+      if (!isTemplate && !hasChildren && node.kind === "state" && critCount === 0) {
         violations.push(
           `${node.id}: 子を持たない状態ノードなのに criteria がありません（原子まで割って verify を置くこと。まだ分解途中なら children を追加すること）`,
         );
@@ -150,9 +155,6 @@ function main() {
       );
     }
   }
-
-  const meta = data.meta || {};
-  const isTemplate = meta.template === true;
 
   // 「案件の絶対起点＝原子ツリー」を機械で裏付ける構造検査。
   // 平坦な md 代替・空/退化したロードマップを CI で弾く（AI の裁量ゼロ）。
