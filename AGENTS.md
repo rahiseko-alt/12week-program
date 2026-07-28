@@ -168,16 +168,25 @@ node scripts/verify-roadmap-evidence.mjs  # roadmap の evidence が外部事実
    - **手順0-b：`main` に「`ci-green` が緑でないとマージ不可」を掛ける。経路は2つあり、Public ならどちらでも効く**
      （どちらか一方でよい。**GitHub の現行 UI は既定で (A) Rulesets に誘導する**ので、そのまま (A) を使うのが迷いが少ない）。
      - **(A) Rulesets（現行 UI の既定・推奨）**：Settings → **Rules → Rulesets** → 「New ruleset」→「New branch ruleset」。
-       **ハマりどころ3点（ここを外すと"作ったのに効かない"状態になる＝実地で確認済み）**：
+       **ハマりどころ4点（ここを外すと"作ったのに効かない"状態になる＝実地で確認済み）**：
        1. **Enforcement status を『Active』にする**（既定は **Disabled** のまま。Disabled だと一切適用されない）。
        2. **Target branches → 「Add target」→「Include default branch」を選ぶ**（未設定だと画面上部に
           「does not target any resources / **Applies to 0 targets**」と出て適用されない。1 target = `main` になればOK）。
        3. **「Require status checks to pass」にチェック → 検索欄で `ci-green` を追加** → 緑の「**Create**」で保存。
+       4. **「Require a pull request before merging」にもチェックし、Required approvals は `0` のままにする**
+          （承認人数を上げない＝tier/basis-gate 廃止の方針を崩さない）。**これが無いと、上の3点を掛けても
+          `main` への直 push で CI もroadmap検査も丸ごと迂回できてしまう**（実地で確認済み＝最重要）。
      - **(B) 従来の Branch protection（代替）**：Settings → 左メニュー **『Branches』** →「Add branch protection rule」→
        **Branch name pattern に `main`**（空だと Create が押せない）→「Require status checks to pass before merging」に
-       チェック → 検索欄で **`ci-green`** → 一番下の緑「**Create**」。
+       チェック → 検索欄で **`ci-green`** →「Require a pull request before merging」にもチェック（Required approvals は
+       classic API/UIでは 0 を選べないため、代わりに Required approvals を **1** にするか、(A) Rulesets を使う → 一番下の緑「**Create**」。
      - ⚠ **無料 Private では (A)(B) いずれも強制されない**（Rulesets は Team org 必須の警告が出る＝実地で確認済み）。
        だから前提として手順0-a で **Public** にする。Public にしない場合は歯止めが掛からないので `auto-merge` を無効化し人手マージにする。
+   - **手順0-d：Secret Protection / Push protection を有効化する** — Settings → **Security → Code security**
+     （旧 Security and analysis）→「Secret Protection」「Push protection」をそれぞれ **Enable**（Public repo なら無料）。
+     未有効だと、誤って API キー等をコミットしても検知・ブロックされない（実地で確認済み＝ボタンが「Enable」表示なら未有効）。
+     依存の自動更新（Dependabot version updates）は、この cc-v2 テンプレに `.github/dependabot.yml` が同梱済みなので
+     コピー後に追加設定は不要（PR を1本出せば自動的に動き出す）。
    - **手順0-c：`roadmap-required` は最初は一覧に出ない**（PR 時のみ動くチェックのため、PR が1本も無い新規
      repo では未記録＝実地で確認済み）。**最初の PR が1回動いた後**、同じ画面で `roadmap-required` を追加する。
      `ci-green` だけでも型/Lint/テスト/ビルド/ツリー検査(evidence)/起動確認を束ねた本丸は効く。
