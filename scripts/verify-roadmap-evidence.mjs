@@ -21,6 +21,7 @@
 //   意図的に許容する（下の nodes 空チェック／nav 必須チェックが代わりに効く）。
 
 import { readFileSync } from "node:fs";
+import { createHash } from "node:crypto";
 import { fileURLToPath } from "node:url";
 import { dirname, resolve } from "node:path";
 
@@ -55,7 +56,39 @@ function main() {
 
   const ids = new Set();
   const violations = [];
+  // 枝単位の部分凍結。node.frozen === true を付けた枝（とその子孫）だけを凍結対象とする。
+  // 全部を一度に凍結できないほど基準が大きい場合に、着手する枝から順に凍結して実装へ進むため。
+  // 安全性：凍結していない葉は evidence を持てない（＝doneにできない）ので、
+  // 「レビューを通していない基準で完了を主張する」経路は塞がったままになる。
+  // ID は木全体で一意でなければならない。凍結状態を ID の集合で持つため、
+  // 未凍結ノードが凍結ノードと同じ ID を持つと凍結扱いになり、
+  // レビューを通していない基準で evidence を出せてしまう（CodeRabbit 指摘）。
+  const frozenIds = new Set();
+  const seenIds = new Set();
+  for (const root of data.nodes) {
+    const mark = (node, inherited) => {
+      if (node.id) {
+        if (seenIds.has(node.id)) {
+          violations.push(
+            `${node.id}: node ID が重複しています。ID は木全体で一意にすること（重複すると凍結状態が混線し、未レビューの葉が凍結扱いになる）`,
+          );
+        }
+        seenIds.add(node.id);
+      }
+      const on = inherited || node.frozen === true;
+      if (on && node.id) frozenIds.add(node.id);
+      // children が配列でない壊れたデータでもクラッシュせず、下の構造検査で報告させる。
+      if (Array.isArray(node.children)) {
+        for (const child of node.children) mark(child, on);
+      }
+    };
+    mark(root, false);
+  }
   const depsMap = new Map(); // id -> [依存先id...]（道順/依存。時系列は背骨でなくここで表す）
+  // 基準凍結の門（basis-reviewer）を機械で強制するための指紋。
+  // 全 criteria の text/verify を木の順に連結してハッシュ化する。
+  // criteria を1文字でも変えれば指紋が変わり、meta.basis_review の更新（＝レビュー実施）を強制できる。
+  const criteriaParts = [];
 
   const meta = data.meta || {};
   const isTemplate = meta.template === true;
@@ -98,7 +131,18 @@ function main() {
       }
 
       for (const c of node.criteria || []) {
+        // JSON 配列にしてから連結する。区切りを曖昧にすると（スペース等）、text と verify の
+        // 境界をまたいで内容を移し替えるだけで指紋を変えずに基準を書き換えられてしまう
+        // （text="A"/verify="B C" と text="A B"/verify="C" が同じ連結文字列になる）。
+        if (frozenIds.has(node.id)) {
+          criteriaParts.push(JSON.stringify([node.id, c.text ?? "", c.verify ?? ""]));
+        }
         const ev = (c.evidence ?? "").trim();
+        if (ev !== "" && !frozenIds.has(node.id)) {
+          violations.push(
+            `${node.id}: 凍結されていない葉に evidence が入っています。basis-reviewer の pass を得て frozen:true を付けてからでないと done にできません（.claude/skills/basis-freeze/SKILL.md）`,
+          );
+        }
         if (ev === "") continue; // 未充足は対象外（☐ のまま）
         const ok = EVIDENCE_PATTERNS.some((re) => re.test(ev));
         if (!ok) {
@@ -186,6 +230,39 @@ function main() {
       violations.push(
         "受入条件(criteria)を持つ葉が1つもありません（原子まで割って各葉に verify を置くこと）",
       );
+    }
+  }
+
+  // 基準凍結の門を機械で強制する（AGENTS.md「検証の規律」＝本人採点の禁止）。
+  // criteria/verify は本人が書いて本人が確定してよいものではなく、basis-reviewer（作業した本人以外）の
+  // 敵対的レビューを通してから凍結する。人間もAIも「書いてあるルールを読まない」ため、CIで止める。
+  // criteria を変えれば指紋が変わる → meta.basis_review.criteria_hash と食い違う → CI が赤。
+  // 指紋を合わせるには meta.basis_review を更新するしかなく、その瞬間に verdict の申告を強制できる。
+  if (!isTemplate && criteriaParts.length > 0) {
+    const fingerprint = createHash("sha256")
+      .update(criteriaParts.join("\n"))
+      .digest("hex")
+      .slice(0, 16);
+    const br = meta.basis_review;
+    if (!br || typeof br !== "object") {
+      violations.push(
+        `meta.basis_review がありません。criteria/verify は basis-reviewer（.claude/agents/basis-reviewer.md）の敵対的レビューを通してから凍結すること。レビュー後に meta.basis_review = { verdict:"pass", criteria_hash:"${fingerprint}", reviewed_at, scope, note } を記録すること（詳細は .claude/skills/basis-freeze/SKILL.md）`,
+      );
+    } else if (br.verdict !== "pass") {
+      violations.push(
+        `meta.basis_review.verdict が "${br.verdict ?? "(未設定)"}" です。basis-reviewer が pass を出していない基準は凍結できません（objection のまま実装に進まないこと）`,
+      );
+    } else if (String(br.criteria_hash ?? "").trim() !== fingerprint) {
+      violations.push(
+        `criteria/verify がレビュー済みの内容と一致しません（現在の指紋 ${fingerprint} / 記録 ${br.criteria_hash ?? "(未設定)"}）。基準を書き換えたなら basis-reviewer に再レビューさせ、pass を得てから meta.basis_review.criteria_hash を ${fingerprint} に更新すること。自分でレビュー結果を書いて通すのは本人採点であり禁止`,
+      );
+    }
+    for (const key of ["reviewed_at", "scope", "note"]) {
+      if (br && typeof br === "object" && !String(br[key] ?? "").trim()) {
+        violations.push(
+          `meta.basis_review.${key} が未設定です（いつ・どの範囲を・どう判定されたかを残すこと。scope には frozen:true を付けた枝を書く）`,
+        );
+      }
     }
   }
 

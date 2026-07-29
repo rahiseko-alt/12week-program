@@ -57,6 +57,18 @@
      （`.claude/agents/independent-verifier.md`）が判定する。＝作業した本人以外・報告を鵜呑みにせず
      自分で `verify` を再実行・再観察し、敵対的に落としにいく。
 - **基準は着手前に固定**：`criteria` / `verify` は着手前に決め、作業の途中で自分に都合よく緩めない。
+- **基準を凍結する瞬間は `basis-freeze` スキルを必ず使う（例外なし・AI 裁量ゼロ）**：
+  `criteria` / `verify` を**新規に書く・割る・文言を直す**ときは、`.claude/skills/basis-freeze/SKILL.md`
+  の手順に従い、**`basis-reviewer` サブエージェントの敵対的レビューで `pass` を得てから凍結する**。
+  自分で書いた基準を自分で確定させることは、`criteria` の中身が何であれ**本人採点**であり禁止。
+  - **機械が強制する（読まなくても止まる）**：`scripts/verify-roadmap-evidence.mjs` が全 `criteria` の
+    `text` + `verify` を連結した指紋を計算し、`meta.basis_review.criteria_hash` と突き合わせる。
+    基準を1文字でも変えれば指紋がずれて **CI（`ci-green`）が赤**になり、branch protection によりマージできない。
+    指紋を合わせるには `meta.basis_review` の更新が要り、その瞬間に `verdict` の申告が強制される
+    （`verdict !== "pass"` でも落ちる＝objection のまま実装に進めない）。
+  - **なぜ機械化したか**：この規律は文章として先に存在していたが読まれず、2026-07-29 に新ゴール G2 の
+    ツリー（7枝21葉）を担当 AI が自分で書いて自分で確定させた。掛けてみたら不合格で、原子性違反 8 件・
+    被覆の抜け 6 件・合格ラインのすり替え 5 件が出た（`docs/failures.md` 参照）。**書いても読まれないので CI で落とす。**
 - **evidence は偽造不能な外部事実のみ**：CI の run URL / 変更を実際に含む commit SHA / デプロイ ID /
   第三者が叩ける公開 URL。**「スクショ保存した」「レビューした」等の自己申告は証拠にしない。**
 - **粒度＝原子（1葉＝1事実＝1verify）。これが唯一の停止条件**：葉の状態は「独立して落ちうる受入事実」が
