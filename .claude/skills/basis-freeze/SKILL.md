@@ -45,7 +45,7 @@ node scripts/verify-roadmap-evidence.mjs
   "verdict": "pass",
   "criteria_hash": "<リンタが出した16桁>",
   "reviewed_at": "YYYY-MM-DD",
-  "scope": "レビューさせた範囲（例：G2 全8枝36葉）",
+  "scope": "レビューさせた範囲。frozen:true を付けた枝と一致させる（例：G2のQ枝（Q1-a〜Q8））",
   "note": "何を指摘され、どう直して pass になったかの要点"
 }
 ```
@@ -62,10 +62,18 @@ node scripts/verify-roadmap-evidence.mjs
 
 ## 機械強制の中身
 
-`scripts/verify-roadmap-evidence.mjs` が、全 `criteria` の `text` + `verify` を木の順に連結して
-SHA-256 の先頭16桁を取り、`meta.basis_review.criteria_hash` と突き合わせる。
+`scripts/verify-roadmap-evidence.mjs` が、**凍結対象（`frozen:true` を付けた枝とその子孫）の** `criteria` について
+`[ノードID, text, verify]` の JSON 配列を木の順に作り、改行で連結して SHA-256 の先頭16桁を取り、
+`meta.basis_review.criteria_hash` と突き合わせる。
 
-- `criteria` を1文字でも変えれば指紋が変わる → 記録と食い違う → **CI が赤**
+区切りを曖昧にする（スペース連結等）と `text` と `verify` の境界をまたいで内容を移し替えるだけで
+指紋を変えずに基準を書き換えられるため、JSON 配列で境界を確定させている。
+
+指紋の値は自分で計算せず、**リンタが出したものをそのまま記録する**（実装と手計算がずれると
+正しい pass が CI で落ちる）。
+
+- 凍結対象の `criteria` を1文字でも変えれば指紋が変わる → 記録と食い違う → **CI が赤**
+- **凍結していない葉に `evidence` を入れても落ちる**（＝レビューを通していない基準で done を主張できない）
 - 指紋を合わせるには `meta.basis_review` を更新するしかない → その瞬間に `verdict` の申告を強制される
 - `verdict` が `pass` 以外なら落ちる
 

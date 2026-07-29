@@ -60,12 +60,27 @@ function main() {
   // 全部を一度に凍結できないほど基準が大きい場合に、着手する枝から順に凍結して実装へ進むため。
   // 安全性：凍結していない葉は evidence を持てない（＝doneにできない）ので、
   // 「レビューを通していない基準で完了を主張する」経路は塞がったままになる。
+  // ID は木全体で一意でなければならない。凍結状態を ID の集合で持つため、
+  // 未凍結ノードが凍結ノードと同じ ID を持つと凍結扱いになり、
+  // レビューを通していない基準で evidence を出せてしまう（CodeRabbit 指摘）。
   const frozenIds = new Set();
+  const seenIds = new Set();
   for (const root of data.nodes) {
     const mark = (node, inherited) => {
+      if (node.id) {
+        if (seenIds.has(node.id)) {
+          violations.push(
+            `${node.id}: node ID が重複しています。ID は木全体で一意にすること（重複すると凍結状態が混線し、未レビューの葉が凍結扱いになる）`,
+          );
+        }
+        seenIds.add(node.id);
+      }
       const on = inherited || node.frozen === true;
       if (on && node.id) frozenIds.add(node.id);
-      for (const child of node.children || []) mark(child, on);
+      // children が配列でない壊れたデータでもクラッシュせず、下の構造検査で報告させる。
+      if (Array.isArray(node.children)) {
+        for (const child of node.children) mark(child, on);
+      }
     };
     mark(root, false);
   }
