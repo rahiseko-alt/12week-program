@@ -56,6 +56,19 @@ function main() {
 
   const ids = new Set();
   const violations = [];
+  // 枝単位の部分凍結。node.frozen === true を付けた枝（とその子孫）だけを凍結対象とする。
+  // 全部を一度に凍結できないほど基準が大きい場合に、着手する枝から順に凍結して実装へ進むため。
+  // 安全性：凍結していない葉は evidence を持てない（＝doneにできない）ので、
+  // 「レビューを通していない基準で完了を主張する」経路は塞がったままになる。
+  const frozenIds = new Set();
+  for (const root of data.nodes) {
+    const mark = (node, inherited) => {
+      const on = inherited || node.frozen === true;
+      if (on && node.id) frozenIds.add(node.id);
+      for (const child of node.children || []) mark(child, on);
+    };
+    mark(root, false);
+  }
   const depsMap = new Map(); // id -> [依存先id...]（道順/依存。時系列は背骨でなくここで表す）
   // 基準凍結の門（basis-reviewer）を機械で強制するための指紋。
   // 全 criteria の text/verify を木の順に連結してハッシュ化する。
@@ -106,8 +119,15 @@ function main() {
         // JSON 配列にしてから連結する。区切りを曖昧にすると（スペース等）、text と verify の
         // 境界をまたいで内容を移し替えるだけで指紋を変えずに基準を書き換えられてしまう
         // （text="A"/verify="B C" と text="A B"/verify="C" が同じ連結文字列になる）。
-        criteriaParts.push(JSON.stringify([node.id, c.text ?? "", c.verify ?? ""]));
+        if (frozenIds.has(node.id)) {
+          criteriaParts.push(JSON.stringify([node.id, c.text ?? "", c.verify ?? ""]));
+        }
         const ev = (c.evidence ?? "").trim();
+        if (ev !== "" && !frozenIds.has(node.id)) {
+          violations.push(
+            `${node.id}: 凍結されていない葉に evidence が入っています。basis-reviewer の pass を得て frozen:true を付けてからでないと done にできません（.claude/skills/basis-freeze/SKILL.md）`,
+          );
+        }
         if (ev === "") continue; // 未充足は対象外（☐ のまま）
         const ok = EVIDENCE_PATTERNS.some((re) => re.test(ev));
         if (!ok) {
@@ -225,7 +245,7 @@ function main() {
     for (const key of ["reviewed_at", "scope", "note"]) {
       if (br && typeof br === "object" && !String(br[key] ?? "").trim()) {
         violations.push(
-          `meta.basis_review.${key} が未設定です（いつ・どの範囲を・どう判定されたかを残すこと）`,
+          `meta.basis_review.${key} が未設定です（いつ・どの範囲を・どう判定されたかを残すこと。scope には frozen:true を付けた枝を書く）`,
         );
       }
     }
